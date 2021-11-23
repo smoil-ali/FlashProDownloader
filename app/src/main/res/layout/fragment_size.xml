@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:id="@+id/header"
+        >
+        <ImageView
+            android:layout_width="70dp"
+            android:layout_height="40dp"
+            android:src="@drawable/remove"
+            android:layout_alignParentTop="true"
+            android:contentDescription="@string/remove"
+            android:id="@+id/remove"
+            android:layout_centerHorizontal="true"
+            />
+
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/logo_icon"
+            android:layout_below="@id/remove"
+            android:layout_marginStart="20dp"
+            android:id="@+id/logo"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Videos To Download"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            android:layout_below="@id/remove"
+            android:layout_centerHorizontal="true"
+            android:layout_alignTop="@id/logo"
+            android:layout_alignBottom="@id/logo"
+            android:gravity="center"
+            />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/body"
+        android:layout_width="match_parent"
+        android:layout_height="400dp"
+        android:layout_below="@id/header">
+
+        <ProgressBar
+            android:id="@+id/loading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="30dp"
+            android:indeterminate="true"
+            android:indeterminateTint="@color/black"
+            android:indeterminateTintMode="src_atop"
+            android:progressTint="@color/black" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            />
+
+    </RelativeLayout>
+
+
+
+
+</RelativeLayout>
