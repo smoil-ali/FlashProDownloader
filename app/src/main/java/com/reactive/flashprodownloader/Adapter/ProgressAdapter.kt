@@ -10,6 +10,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.reactive.flashprodownloader.Fragments.ProgressFragment
 import com.reactive.flashprodownloader.Helper.ProgressDiffUtil
 import com.reactive.flashprodownloader.Interfaces.ProgressListener
@@ -57,6 +58,7 @@ val list: MutableList<FlashLightDownload>):RecyclerView.Adapter<RecyclerView.Vie
 
                 holder.binding.title.text = it.title
                 holder.binding.size.text = it.size
+
 
                 listener.onStart(lightDownload,holder)
                 holder.binding.playContainer.setOnClickListener {
