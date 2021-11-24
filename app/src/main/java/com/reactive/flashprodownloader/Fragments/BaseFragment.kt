@@ -24,6 +24,7 @@ open class BaseFragment:Fragment() {
     lateinit var flashDao: FlashDao
     lateinit var listBrowsers:List<FlashHome>
     lateinit var mainBinding: ActivityMainBinding
+    lateinit var resultLauncher: ActivityResultLauncher<Intent>
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -32,6 +33,7 @@ open class BaseFragment:Fragment() {
         flashDao = mainActivity.flashDao
         listBrowsers = mainActivity.listBrowsers
         mainBinding = mainActivity.binding
+        resultLauncher = mainActivity.resultLauncher
     }
 
     fun setOnBackPressedListener(onBackPressedListener: OnBackPressedListener?){
@@ -61,5 +63,23 @@ open class BaseFragment:Fragment() {
     fun registerReceiver(broadcastReceiver: BroadcastReceiver){
         mainActivity.registerReceiver(broadcastReceiver,
             IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE))
+    }
+
+    fun HomeSelection(){
+        mainActivity.homeSelectIcon()
+        mainActivity.downloadNormal()
+        mainActivity.completeNormal()
+    }
+
+    fun DownloadSelection(){
+        mainActivity.downloadSelectIcon()
+        mainActivity.homeNormal()
+        mainActivity.completeNormal()
+    }
+
+    fun CompleteSelection(){
+        mainActivity.completeSelectIcon()
+        mainActivity.homeNormal()
+        mainActivity.downloadNormal()
     }
 }

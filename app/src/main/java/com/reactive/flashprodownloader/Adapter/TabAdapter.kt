@@ -83,10 +83,7 @@ class TabAdapter(val context: Context,
                 if (TabActivity.selected_tab.value == holder.adapterPosition){
                     change = true
                     if (TabActivity.selected_tab.value == 0){
-                        if (list.size > 1){
-                            TabActivity.selected_tab.value = TabActivity.selected_tab.value!! + 1
-                            listener.OnCancel(win)
-                        }
+                        listener.OnCancel(win)
                     }else if (TabActivity.selected_tab.value == list.size - 1){
                         TabActivity.selected_tab.value = TabActivity.selected_tab.value!! - 1
                         listener.OnCancel(win)
@@ -95,7 +92,7 @@ class TabAdapter(val context: Context,
                     }
                 }else{
                     if (TabActivity.selected_tab.value!! > holder.adapterPosition)
-                        TabActivity.selected_tab.value = TabActivity.selected_tab.value!! + 1
+                        TabActivity.selected_tab.value = TabActivity.selected_tab.value!! - 1
                     listener.OnCancel(win)
                 }
 

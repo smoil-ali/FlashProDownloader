@@ -13,6 +13,8 @@ import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.GridLayoutManager
+import com.reactive.flashprodownloader.Activities.BookmarkActivity
+import com.reactive.flashprodownloader.Activities.HistoryActivity
 import com.reactive.flashprodownloader.Activities.TabActivity
 import com.reactive.flashprodownloader.Adapter.HomePageAdapter
 import com.reactive.flashprodownloader.Dialogs.SizeFragment
@@ -153,6 +155,7 @@ class HomeFragment : BaseFragment(), WebViewCallbacks, HomePageAdapterCallbacks
 
     override fun onResume() {
         super.onResume()
+        HomeSelection()
         setMainActivityListener(this)
         setBookmarkMain(this)
         setHistoryMain(this)
@@ -204,8 +207,12 @@ class HomeFragment : BaseFragment(), WebViewCallbacks, HomePageAdapterCallbacks
             }
 
         } else if (id == R.id.history) {
+            val intent = Intent(requireContext(), HistoryActivity::class.java)
+            resultLauncher.launch(intent)
             return true
         } else if (id == R.id.bookmarkAdd) {
+            val intent = Intent(requireContext(), BookmarkActivity::class.java)
+            resultLauncher.launch(intent)
             return true
         }
         return false

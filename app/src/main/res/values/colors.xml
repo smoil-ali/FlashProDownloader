@@ -13,4 +13,5 @@
     <color name="selected_color">#4153F3</color>
     <color name="color_grey">#ff120303</color>
     <color name="header_border">#8C8B8B</color>
+    <color name="selected_color_progress">#1A3DF1CC</color>
 </resources>

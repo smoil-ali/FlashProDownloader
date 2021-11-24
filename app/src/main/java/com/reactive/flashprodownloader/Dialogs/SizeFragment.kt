@@ -269,7 +269,7 @@ class SizeFragment(private val videoList: List<FlashLightDownloadPro>?) : BaseFr
                 dismiss()
                 Log.i(TAG, "onViewCreated: $msg")
                         size = true
-                mainBinding.pager.currentItem = 2
+                mainBinding.pager.currentItem = 1
 
             }
     }

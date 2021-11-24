@@ -16,16 +16,41 @@
         android:theme="@style/Theme.FlashProDownloader">
         <activity
             android:name=".Activities.TabActivity"
-            android:exported="true" />
+            android:exported="true"
+            android:screenOrientation="portrait"
+            />
         <activity
             android:name=".Activities.MainActivity"
-            android:exported="true">
+            android:exported="true"
+            android:screenOrientation="portrait"
+            >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".Activities.HistoryActivity"
+            android:exported="true"
+            android:screenOrientation="portrait"
+            />
+        <activity
+            android:name=".Activities.BookmarkActivity"
+            android:exported="true"
+            android:screenOrientation="portrait"
+            />
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.reactive.flashprodownloader.fileProvider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_provider_paths" />
+        </provider>
     </application>
 
 </manifest>

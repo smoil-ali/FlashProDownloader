@@ -24,4 +24,6 @@ open class BaseFragment:BottomSheetDialogFragment() {
         mainBinding = mainActivity.binding
         windowDao = mainActivity.flashDao
     }
+
+
 }

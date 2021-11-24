@@ -1,5 +1,7 @@
 package com.reactive.flashprodownloader.Activities
 
+import android.app.AlertDialog
+import android.content.DialogInterface
 import android.os.Bundle
 import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.contract.ActivityResultContracts
@@ -9,6 +11,8 @@ import com.reactive.flashprodownloader.Helper.Constants
 import com.reactive.flashprodownloader.Interfaces.*
 import com.reactive.flashprodownloader.R
 import com.reactive.flashprodownloader.databinding.ActivityMainBinding
+import com.reactive.flashprodownloader.model.FlashBookmark
+import com.reactive.flashprodownloader.model.FlashHistory
 import com.reactive.flashprodownloader.model.FlashHome
 
 
@@ -32,7 +36,20 @@ class MainActivity : BaseActivity() {
 
     private var listener: OnBackPressedListener? = null
 
-
+    val resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult(),
+        ActivityResultCallback {
+            if (it.resultCode == Constants.BOOKMARK){
+                val data = it.data?.getSerializableExtra(Constants.PARAMS) as FlashBookmark
+                showHomeScreen()
+                bookmarkListener.onBookmark(data)
+            }
+            if(it.resultCode == Constants.HISTORY){
+                val data = it.data?.getSerializableExtra(Constants.PARAMS) as FlashHistory
+                showHomeScreen()
+                historyListener.onHistory(data)
+            }
+        }
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -200,7 +217,16 @@ class MainActivity : BaseActivity() {
 
 
 
-    fun exitApp(){
+    private fun exitApp(){
+        AlertDialog.Builder(this)
+            .setTitle("Alert")
+            .setMessage("Do you want to exit?")
+            .setPositiveButton("Yes"
+            ) { dialog, which -> finish() }
+            .setNegativeButton("No"){
+                dialog,which -> dialog.dismiss()
+            }
+            .show()
 //        val dialog = ExitDialog()
 //        dialog.setStyle(DialogFragment.STYLE_NO_FRAME,
 //            android.R.style.Theme_Translucent)

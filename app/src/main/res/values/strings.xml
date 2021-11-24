@@ -27,4 +27,14 @@
     <string name="downloads">Downloads</string>
     <string name="new_tab">New Tab</string>
     <string name="remove">remove</string>
+    <string name="no_downloads">No Downloads</string>
+    <string name="back">back</string>
+    <string name="delete_progress">Delete Progress</string>
+    <string name="progress">Progress</string>
+    <string name="no_progress">No Progress</string>
+    <string name="history_not_found">History Not Found</string>
+    <string name="no_bookmarks">No Bookmarks</string>
+    <string name="page_title">Page title</string>
+    <string name="delete_bookmark">Delete Bookmark</string>
+    <string name="hello">hello</string>
 </resources>
