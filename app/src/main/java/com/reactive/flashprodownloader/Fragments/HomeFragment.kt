@@ -1,8 +1,10 @@
 package com.reactive.flashprodownloader.Fragments
 
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.util.Patterns
@@ -26,6 +28,7 @@ import com.reactive.flashprodownloader.Interfaces.*
 import com.reactive.flashprodownloader.WebView.CustomWebView
 import com.reactive.flashprodownloader.model.*
 import kotlinx.coroutines.*
+import java.lang.NullPointerException
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.HashMap
@@ -214,6 +217,27 @@ class HomeFragment : BaseFragment(), WebViewCallbacks, HomePageAdapterCallbacks
             val intent = Intent(requireContext(), BookmarkActivity::class.java)
             resultLauncher.launch(intent)
             return true
+        } else if (id == R.id.privacy_policy){
+            Log.i(TAG, "onMenuItemClick: Privacy Policy")
+        } else if (id == R.id.share){
+            val shareIntent = Intent(Intent.ACTION_SEND)
+            shareIntent.type = "text/plain"
+            shareIntent.putExtra(Intent.EXTRA_SUBJECT,R.string.app_name)
+            val shareMessage = "Let me recommend you this application\nhttps://play.google.com/store/apps/details?id="+Constants.PACKAGE_NAME
+            shareIntent.putExtra(Intent.EXTRA_TEXT, shareMessage)
+            startActivity(Intent.createChooser(shareIntent, "choose one"))
+        } else if (id == R.id.rate){
+            val uri: Uri = Uri.parse("market://details?id=${Constants.PACKAGE_NAME}")
+            val goToMarket = Intent(Intent.ACTION_VIEW, uri)
+            goToMarket.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY or
+                    Intent.FLAG_ACTIVITY_NEW_DOCUMENT or
+                    Intent.FLAG_ACTIVITY_MULTIPLE_TASK)
+            try {
+                startActivity(goToMarket)
+            } catch (e: ActivityNotFoundException) {
+                startActivity(Intent(Intent.ACTION_VIEW,
+                    Uri.parse("http://play.google.com/store/apps/details?id=${Constants.PACKAGE_NAME}")))
+            }
         }
         return false
     }
@@ -228,27 +252,25 @@ class HomeFragment : BaseFragment(), WebViewCallbacks, HomePageAdapterCallbacks
         Log.i(TAG, "getWindow: save id $save_id")
         if (save_id != 0) {
             coroutineScope.launch {
-                currentWindow = withContext(Dispatchers.Default) {
-                    return@withContext flashDao.getFlashWindowById(save_id)
-                }
-                if (currentWindow.url != Constants.BLANK_URL) {
-                    loadWebView()
-                } else {
-                    binding.homeBrowser.webViewContainer.removeAllViews()
-                    showHomePage()
+                try {
+                    currentWindow = withContext(Dispatchers.Default) {
+                        val window = flashDao.getFlashWindowById(save_id)
+                        return@withContext window
+                    }
+                    if (currentWindow.url != Constants.BLANK_URL) {
+                        loadWebView()
+                    } else {
+                        binding.homeBrowser.webViewContainer.removeAllViews()
+                        showHomePage()
+                    }
+                }catch (exception: NullPointerException){
+                    Log.i(TAG, "getWindow: null e oye")
+                    createNewTab()
                 }
                 Log.i(TAG, "getWindow: $currentWindow")
             }
         } else {
-            showHomePage()
-            currentWindow = FlashWindow(
-                0, Constants.BLANK_URL,
-                Constants.BLANK_URL, Constants.BLANK_URL,true
-            )
-            coroutineScope.launch(Dispatchers.Default) {
-                flashDao.createNewFlashWindow(currentWindow)
-                Log.i(TAG, "getWindow: $currentWindow")
-            }
+            createNewTab()
         }
     }
 
@@ -269,6 +291,18 @@ class HomeFragment : BaseFragment(), WebViewCallbacks, HomePageAdapterCallbacks
             }
         })
 
+    }
+
+    private fun createNewTab(){
+        showHomePage()
+        currentWindow = FlashWindow(
+            0, Constants.BLANK_URL,
+            Constants.BLANK_URL, Constants.BLANK_URL,true
+        )
+        coroutineScope.launch(Dispatchers.Default) {
+            flashDao.createNewFlashWindow(currentWindow)
+            Log.i(TAG, "getWindow: $currentWindow")
+        }
     }
 
 

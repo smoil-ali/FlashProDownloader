@@ -92,7 +92,7 @@ public class Constants {
     public static final String DAILYMOTION_URL = "https://www.dailymotion.com";
     public static final String DAILYMOTION_TITLE = "dailymotion";
     public static final String DATE = "DATE";
-    public static final int  DAILYMOTION_ICON = R.drawable.dailymotion;
+    public static final int  DAILYMOTION_ICON = R.drawable.dailymotion_icon;
 
     public static final String FACEBOOK_URL = "https://m.facebook.com";
     public static final String FACEBOOK_TITLE = "facebook";
@@ -108,7 +108,21 @@ public class Constants {
     public static final String TWITTER_TITLE = "twitter";
     public static final int TWITTER_ICON = R.drawable.twitter_icon;
 
+    public static final String WIKI_URL = "https://www.wikipedia.org/";
+    public static final String WIKI_TITLE = "wiki";
+    public static final int  WIKI_ICON = R.drawable.wiki_icon;
 
+    public static final String CRICBUZZ_URL = "https://www.cricbuzz.com/";
+    public static final String CRICBUZZ_TITLE = "crickbuzz";
+    public static final int CRICBUZZ_ICON = R.drawable.crickbuzz_icon;
+
+    public static final String ALIEXPRESS_URL = "https://www.aliexpress.com/";
+    public static final String ALIEXPRESS_TITLE = "AliExpress";
+    public static final int ALIEXPRESS_ICON = R.drawable.aliexpress_icon;
+
+    public static final String ESPN_URL = "https://www.espncricinfo.com/";
+    public static final String ESPN_TITLE = "ESPN";
+    public static final int ESPN_ICON  = R.drawable.espn_icon;
 
     public static final String LIKEE_URL = "https://likee.video/m_index?lang=en";
     public static final String LIKEE_TITLE = "Likee";

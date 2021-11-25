@@ -126,6 +126,14 @@ class MainActivity : BaseActivity() {
             FlashHome(Constants.IMDB_URL,
                 Constants.IMDB_TITLE,
                 Constants.IMDB_ICON),
+            FlashHome(Constants.WIKI_URL,
+            Constants.WIKI_TITLE,Constants.WIKI_ICON),
+            FlashHome(Constants.ALIEXPRESS_URL,
+            Constants.ALIEXPRESS_TITLE,Constants.ALIEXPRESS_ICON),
+            FlashHome(Constants.CRICBUZZ_URL,
+            Constants.CRICBUZZ_TITLE,Constants.CRICBUZZ_ICON),
+            FlashHome(Constants.ESPN_URL,Constants.ESPN_TITLE,Constants.ESPN_ICON)
+
         )
     }
 

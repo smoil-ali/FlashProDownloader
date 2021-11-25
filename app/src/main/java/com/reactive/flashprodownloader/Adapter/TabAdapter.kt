@@ -65,12 +65,12 @@ class TabAdapter(val context: Context,
             }else{
                 if (Utils.isPathExists(win.path!!,context)){
                     Glide.with(context)
-                        .load(Uri.parse(Constants.getHomePageScreenShot(context,win.path)))
+                        .load(File(Constants.getHomePageScreenShot(context,win.path)))
                         .placeholder(R.drawable.logo_icon)
                         .into(holder.binding.imageView)
                 }else{
                     Glide.with(context)
-                        .load(Uri.parse(Constants.getHomePageScreenShot(context,Constants.HOME_PAGE_TITLE)))
+                        .load(File(Constants.getHomePageScreenShot(context,Constants.HOME_PAGE_TITLE)))
                         .placeholder(R.drawable.logo_icon)
                         .into(holder.binding.imageView)
                 }

@@ -42,11 +42,12 @@ class CompleteAdapter(val context: Context,
         Log.i(TAG, "onBindViewHolder: data load")
         lightDownload.value = list[holder.adapterPosition]
         if (holder is MyViewHolder){
+            holder.binding.container.background  =
+                ContextCompat.getDrawable(context,R.drawable.shadow_background)
             lightDownload.observe(lifecycle, {
                 if (!it.selected){
-                    holder.binding.container.setBackgroundColor(
-                        ContextCompat.
-                    getColor(context, R.color.white))
+                    holder.binding.container.background  =
+                        ContextCompat.getDrawable(context,R.drawable.shadow_background)
                 }else{
                     holder.binding.container.setBackgroundColor(ContextCompat.
                     getColor(context,R.color.selected_color_progress))

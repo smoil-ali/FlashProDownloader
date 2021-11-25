@@ -37,4 +37,8 @@
     <string name="page_title">Page title</string>
     <string name="delete_bookmark">Delete Bookmark</string>
     <string name="hello">hello</string>
+    <string name="privacy_policy">Privacy Policy</string>
+    <string name="share">Share</string>
+    <string name="rate_us">Rate Us</string>
+    <string name="splash_text">splash text</string>
 </resources>

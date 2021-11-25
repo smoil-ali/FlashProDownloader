@@ -10,11 +10,13 @@
         <entry key="app/src/main/res/drawable/edit_text_bg.xml" value="0.13333333333333333" />
         <entry key="app/src/main/res/drawable/greenprogress.xml" value="0.13333333333333333" />
         <entry key="app/src/main/res/drawable/ic_clear_black_24dp.xml" value="0.1398148148148148" />
+        <entry key="app/src/main/res/drawable/shadow_background.xml" value="0.13703703703703704" />
         <entry key="app/src/main/res/drawable/square.xml" value="0.13333333333333333" />
         <entry key="app/src/main/res/drawable/start_drawable.xml" value="0.13333333333333333" />
         <entry key="app/src/main/res/layout/activity_bookmark.xml" value="0.19322916666666667" />
         <entry key="app/src/main/res/layout/activity_history.xml" value="0.19322916666666667" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.19322916666666667" />
+        <entry key="app/src/main/res/layout/activity_splash.xml" value="0.19322916666666667" />
         <entry key="app/src/main/res/layout/activity_tab.xml" value="0.19322916666666667" />
         <entry key="app/src/main/res/layout/fragment_complete.xml" value="0.19322916666666667" />
         <entry key="app/src/main/res/layout/fragment_home.xml" value="0.19322916666666667" />

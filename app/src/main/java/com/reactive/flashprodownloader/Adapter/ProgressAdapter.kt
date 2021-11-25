@@ -44,11 +44,12 @@ val list: MutableList<FlashLightDownload>):RecyclerView.Adapter<RecyclerView.Vie
             holder.binding.playContainer.visibility = View.GONE
             holder.binding.pauseContainer.visibility = View.VISIBLE
             holder.binding.circularProgressBar.progress = 0
+            holder.binding.container.background  =
+                ContextCompat.getDrawable(context,R.drawable.shadow_background)
             lightDownload.observe(lifecycle, {
                 if (!it.selected){
-                    holder.binding.container.setBackgroundColor(
-                        ContextCompat.
-                    getColor(context, R.color.white))
+                    holder.binding.container.background  =
+                        ContextCompat.getDrawable(context,R.drawable.shadow_background)
                 }else{
                     holder.binding.container.setBackgroundColor(ContextCompat.
                     getColor(context,R.color.selected_color_progress))
@@ -59,8 +60,9 @@ val list: MutableList<FlashLightDownload>):RecyclerView.Adapter<RecyclerView.Vie
                 holder.binding.title.text = it.title
                 holder.binding.size.text = it.size
 
-
-                listener.onStart(lightDownload,holder)
+                if (holder.binding.playContainer.visibility == View.GONE){
+                    listener.onStart(lightDownload,holder)
+                }
                 holder.binding.playContainer.setOnClickListener {
                     holder.binding.playContainer.visibility = View.GONE
                     holder.binding.pauseContainer.visibility = View.VISIBLE
@@ -97,7 +99,6 @@ val list: MutableList<FlashLightDownload>):RecyclerView.Adapter<RecyclerView.Vie
                                 FlashLightDownload(it.id,it.url,it.title,it.path,it.size,it.bytes,it.selected,it.status)
                             listener.onLong(lightDownload,holder)
                         }
-
                         return true
                     }
                 })

@@ -187,7 +187,12 @@ class ProgressFragment : BaseFragment(), MainActivityListener, OnBackPressedList
             val downloadIds =
                 PR.getDownloadId(lightDownload.value!!.id)
             Log.i(TAG, "onPause: $downloadIds")
-            PRDownloader.pause(downloadIds!!.downloadId)
+            try {
+                PRDownloader.pause(downloadIds!!.downloadId)
+            }catch (exception:NullPointerException){
+                Log.i(TAG, "onPause: null h re")
+            }
+
         }
     }
 
@@ -258,6 +263,9 @@ class ProgressFragment : BaseFragment(), MainActivityListener, OnBackPressedList
         idsList.clear()
         CHECK = false
     }
+
+
+
 
 
 }

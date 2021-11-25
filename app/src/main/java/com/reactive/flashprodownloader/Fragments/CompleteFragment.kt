@@ -130,8 +130,21 @@ class CompleteFragment : BaseFragment(),MainActivityListener,OnBackPressedListen
                 val path = model.value!!.path +"/"+model.value!!.title
                 val file = File(path)
                 Log.i(TAG, "cancelDownloading: $path")
-                if (file.delete()){
-                    Log.i(TAG, "cancelDownloading: deleted successfully")
+                if (file.exists()){
+                    if (file.delete()){
+                        Log.i(TAG, "cancelDownloading: deleted successfully")
+                        val msg = withContext(Dispatchers.Default){
+                            flashDao.deleteLightDownload(model.value!!.id)
+                            Log.i(TAG, "cancelDownloading: delete query")
+                            "Deleted"
+                        }
+                        it.remove()
+                    }
+                    else{
+                        Log.i(TAG, "cancelDownloading: file not deleted")
+                    }
+                }else{
+                    Log.i(TAG, "cancelDownloading: file dont exist")
                     val msg = withContext(Dispatchers.Default){
                         flashDao.deleteLightDownload(model.value!!.id)
                         Log.i(TAG, "cancelDownloading: delete query")
@@ -139,9 +152,7 @@ class CompleteFragment : BaseFragment(),MainActivityListener,OnBackPressedListen
                     }
                     it.remove()
                 }
-                else{
-                    Log.i(TAG, "cancelDownloading: file not deleted")
-                }
+                
             }
             Log.i(TAG, "cancelDownloading: clear")
         }
@@ -179,9 +190,7 @@ class CompleteFragment : BaseFragment(),MainActivityListener,OnBackPressedListen
     override fun onRemove(lightDownload: MutableLiveData<FlashLightDownload>) {
         if(idsList.remove(lightDownload))
             if (idsList.isEmpty()){
-                binding.deleteContainer.visibility = View.GONE
-                binding.backContainer.visibility = View.GONE
-                binding.title.visibility = View.VISIBLE
+                showNormal()
                 CHECK = false
             }
         Log.i(TAG, "onRemove: true ${idsList.size}")

@@ -37,22 +37,32 @@
                     android:background="@android:color/transparent"
                     android:hint="@string/search_url"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toStartOf="@id/reload"
+                    app:layout_constraintEnd_toStartOf="@id/reload_container"
                     android:layout_marginStart="8dp"
                     android:inputType="textUri"
-                    android:autofillHints="no" />
+                    android:autofillHints="no"
+                    android:textColor="@color/white"
+                    />
 
-                <ImageView
+                <FrameLayout
                     android:layout_width="30dp"
                     android:layout_height="30dp"
-                    android:src="@drawable/reload"
-                    android:id="@+id/reload"
-                    android:contentDescription="@string/reload"
+                    android:id="@+id/reload_container"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
+                    android:padding="5dp"
+                    android:background="?android:attr/selectableItemBackground"
+                    >
 
-                    />
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:src="@drawable/reload"
+                        android:id="@+id/reload"
+                        android:contentDescription="@string/reload"
+                        />
+                </FrameLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.cardview.widget.CardView>
 
@@ -108,7 +118,7 @@
             android:id="@+id/pb_page_loading"
             android:padding="0.0dip"
             android:layout_width="match_parent"
-            android:layout_height="10.0dip"
+            android:layout_height="5dp"
             android:layout_marginTop="5dp"
             android:max="100"
             android:progressDrawable="@drawable/greenprogress"
