@@ -41,7 +41,8 @@
                     android:layout_marginStart="8dp"
                     android:inputType="textUri"
                     android:autofillHints="no"
-                    android:textColor="@color/white"
+                    android:selectAllOnFocus="true"
+                    android:ellipsize="end"
                     />
 
                 <FrameLayout

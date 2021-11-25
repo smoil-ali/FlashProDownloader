@@ -57,7 +57,8 @@ class CompleteFragment : BaseFragment(),MainActivityListener,OnBackPressedListen
         super.onViewCreated(view, savedInstanceState)
         adapter = CompleteAdapter(requireContext(),requireActivity(),list)
         adapter.setCompleteListener(this)
-        binding.recycler.layoutManager = LinearLayoutManager(requireContext())
+        binding.recycler.layoutManager = LinearLayoutManager(requireContext(),
+        LinearLayoutManager.VERTICAL,true)
         binding.recycler.adapter = adapter
 
 

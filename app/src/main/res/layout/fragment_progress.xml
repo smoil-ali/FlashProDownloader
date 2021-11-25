@@ -24,7 +24,7 @@
             android:text="@string/progress"
             android:textColor="@color/black"
             android:textStyle="bold"
-            android:textSize="26sp"
+            android:textSize="22sp"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"

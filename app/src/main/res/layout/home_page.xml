@@ -117,9 +117,12 @@
                 android:layout_marginStart="8dp"
                 android:background="@android:color/transparent"
                 android:drawableStart="@drawable/start_drawable"
-                android:drawablePadding="10dp"
+                android:drawablePadding="15dp"
                 android:hint="@string/search_url"
-                android:inputType="textUri" />
+                android:textColor="@color/white"
+                android:inputType="textUri"
+                android:selectAllOnFocus="true"
+                />
 
 
         </RelativeLayout>

@@ -53,7 +53,7 @@ class HomeFragment : BaseFragment(), WebViewCallbacks, HomePageAdapterCallbacks
     lateinit var currentWindow: FlashWindow
     lateinit var list: List<FlashWindow>
     lateinit var sdf: SimpleDateFormat
-    lateinit var currentWebView: WebView
+    var currentWebView: WebView? = null
     lateinit var sharedPrefernces: SharedPreferences
 
     private val videoList: MutableLiveData<MutableList<FlashLightDownloadPro>> = MutableLiveData()
@@ -105,12 +105,12 @@ class HomeFragment : BaseFragment(), WebViewCallbacks, HomePageAdapterCallbacks
         binding.homeBrowser.reload.setOnClickListener {
             binding.homeBrowser.webViewContainer.removeView(currentWebView)
             currentWebView = newWebView()
-            map[currentWindow.id] = currentWebView
+            map[currentWindow.id] = currentWebView!!
             binding.homeBrowser.webViewContainer.addView(currentWebView, 0)
             binding.homeBrowser.pbPageLoading.visibility = View.VISIBLE
             currentWindow.url = binding.homeBrowser.searchUrl.text.toString()
-            currentWebView.loadUrl(currentWindow.url!!)
-            currentWebView.requestFocus()
+            currentWebView!!.loadUrl(currentWindow.url!!)
+            currentWebView!!.requestFocus()
         }
 
         binding.homeBrowser.downloadButton.setOnClickListener {
@@ -158,6 +158,10 @@ class HomeFragment : BaseFragment(), WebViewCallbacks, HomePageAdapterCallbacks
 
     override fun onResume() {
         super.onResume()
+
+
+        currentWebView?.onResume()
+
         HomeSelection()
         setMainActivityListener(this)
         setBookmarkMain(this)
@@ -328,15 +332,16 @@ class HomeFragment : BaseFragment(), WebViewCallbacks, HomePageAdapterCallbacks
             currentWebView = map[currentWindow.id]!!
             binding.homeBrowser.webViewContainer.addView(currentWebView, 0)
         } else {
+            videoList.value = mutableListOf()
             currentWebView = newWebView()
-            map.put(currentWindow.id, currentWebView)
+            map.put(currentWindow.id, currentWebView!!)
             binding.homeBrowser.webViewContainer.addView(currentWebView, 0)
             binding.homeBrowser.pbPageLoading.visibility = View.VISIBLE
-            currentWebView.loadUrl(currentWindow.url!!)
+            currentWebView!!.loadUrl(currentWindow.url!!)
         }
         setOnBackPressedListener(this)
         binding.homeBrowser.searchUrl.setText(currentWindow.url)
-        currentWebView.requestFocus()
+        currentWebView!!.requestFocus()
         showBrowser()
 
     }
@@ -442,19 +447,19 @@ class HomeFragment : BaseFragment(), WebViewCallbacks, HomePageAdapterCallbacks
         currentWindow.title = home.title
         currentWindow.path = sdf.format(Date())
         currentWebView = newWebView()
-        map.put(currentWindow.id, currentWebView)
+        map.put(currentWindow.id, currentWebView!!)
         binding.homeBrowser.webViewContainer.addView(currentWebView, 0)
         binding.homeBrowser.searchUrl.setText(home.url)
         binding.homeBrowser.pbPageLoading.visibility = View.VISIBLE
         setOnBackPressedListener(this)
-        currentWebView.loadUrl(home.url)
+        currentWebView!!.loadUrl(home.url)
         showBrowser()
     }
 
     override fun onBackPressed() {
-        Log.i(TAG, "onBackPressed: ${currentWebView.canGoBack()}")
-        if (currentWebView.canGoBack()) {
-            currentWebView.goBack()
+        Log.i(TAG, "onBackPressed: ${currentWebView?.canGoBack()}")
+        if (currentWebView!!.canGoBack()) {
+            currentWebView!!.goBack()
         } else {
             binding.homeBrowser.webViewContainer.removeAllViews()
             showHomePage()
@@ -496,13 +501,13 @@ class HomeFragment : BaseFragment(), WebViewCallbacks, HomePageAdapterCallbacks
             binding.homeBrowser.webViewContainer.removeView(currentWebView)
         }
         currentWebView = newWebView()
-        map[currentWindow.id] = currentWebView
+        map[currentWindow.id] = currentWebView!!
         binding.homeBrowser.webViewContainer.addView(currentWebView, 0)
         binding.homeBrowser.pbPageLoading.visibility = View.VISIBLE
-        currentWebView.loadUrl(currentWindow.url!!)
+        currentWebView!!.loadUrl(currentWindow.url!!)
         setOnBackPressedListener(this)
         binding.homeBrowser.searchUrl.setText(currentWindow.url)
-        currentWebView.requestFocus()
+        currentWebView!!.requestFocus()
         showBrowser()
         updateData()
     }
@@ -516,13 +521,13 @@ class HomeFragment : BaseFragment(), WebViewCallbacks, HomePageAdapterCallbacks
             binding.homeBrowser.webViewContainer.removeView(currentWebView)
         }
         currentWebView = newWebView()
-        map[currentWindow.id] = currentWebView
+        map[currentWindow.id] = currentWebView!!
         binding.homeBrowser.webViewContainer.addView(currentWebView, 0)
         binding.homeBrowser.pbPageLoading.visibility = View.VISIBLE
-        currentWebView.loadUrl(currentWindow.url!!)
+        currentWebView!!.loadUrl(currentWindow.url!!)
         setOnBackPressedListener(this)
         binding.homeBrowser.searchUrl.setText(currentWindow.url)
-        currentWebView.requestFocus()
+        currentWebView!!.requestFocus()
         showBrowser()
         updateData()
     }
@@ -581,4 +586,11 @@ class HomeFragment : BaseFragment(), WebViewCallbacks, HomePageAdapterCallbacks
     override fun onSelectTab() {
         Utils.showToast(requireContext(),"here")
     }
+
+    override fun onPause() {
+        super.onPause()
+        currentWebView?.onPause()
+    }
+
+
 }
