@@ -167,11 +167,14 @@ class HomeFragment : BaseFragment(), WebViewCallbacks, HomePageAdapterCallbacks
         super.onResume()
 
 
-        currentWebView?.onResume()
+        if (currentWebView != null){
+            currentWebView?.onResume()
+            setOnBackPressedListener(this)
+        }
+
 
         HomeSelection()
         setMainActivityListener(this)
-        setOnBackPressedListener(this)
         setBookmarkMain(this)
         setHistoryMain(this)
         setTabListener(this)
@@ -469,7 +472,7 @@ class HomeFragment : BaseFragment(), WebViewCallbacks, HomePageAdapterCallbacks
 
     override fun onBackPressed() {
         Log.i(TAG, "onBackPressed: ${currentWebView?.canGoBack()}")
-        if (currentWebView!!.canGoBack()) {
+        if (currentWebView?.canGoBack() == true) {
             stopRun = false
             videoList.value = mutableListOf()
             currentWebView!!.goBack()
@@ -481,6 +484,7 @@ class HomeFragment : BaseFragment(), WebViewCallbacks, HomePageAdapterCallbacks
             currentWindow.url = Constants.BLANK_URL
             currentWindow.path = Constants.BLANK_URL
             stopRun = false
+            currentWebView = null
             videoList.value = mutableListOf()
             updateData()
             setOnBackPressedListener(null)
