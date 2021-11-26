@@ -25,6 +25,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.util.*
+import kotlin.collections.ArrayList
 
 
 class CompleteFragment : BaseFragment(),MainActivityListener,OnBackPressedListener,
@@ -57,8 +59,10 @@ class CompleteFragment : BaseFragment(),MainActivityListener,OnBackPressedListen
         super.onViewCreated(view, savedInstanceState)
         adapter = CompleteAdapter(requireContext(),requireActivity(),list)
         adapter.setCompleteListener(this)
-        binding.recycler.layoutManager = LinearLayoutManager(requireContext(),
-        LinearLayoutManager.VERTICAL,true)
+        val layoutManager = LinearLayoutManager(requireContext(),
+            LinearLayoutManager.VERTICAL,false)
+        layoutManager.stackFromEnd = false
+        binding.recycler.layoutManager = layoutManager
         binding.recycler.adapter = adapter
 
 
@@ -112,7 +116,7 @@ class CompleteFragment : BaseFragment(),MainActivityListener,OnBackPressedListen
     private fun getData(){
         flashDao.getCompleteDownloads(true).observe(requireActivity(), Observer {
             Log.i(TAG, "getData: ${it}")
-            adapter.setData(it)
+            adapter.setData(it.reversed())
             if(it.isNotEmpty()){
                 binding.alertTitle.visibility = View.GONE
             }else{

@@ -164,6 +164,7 @@ class HomeFragment : BaseFragment(), WebViewCallbacks, HomePageAdapterCallbacks
 
         HomeSelection()
         setMainActivityListener(this)
+        setOnBackPressedListener(this)
         setBookmarkMain(this)
         setHistoryMain(this)
         setTabListener(this)
@@ -459,6 +460,7 @@ class HomeFragment : BaseFragment(), WebViewCallbacks, HomePageAdapterCallbacks
     override fun onBackPressed() {
         Log.i(TAG, "onBackPressed: ${currentWebView?.canGoBack()}")
         if (currentWebView!!.canGoBack()) {
+            videoList.value = mutableListOf()
             currentWebView!!.goBack()
         } else {
             binding.homeBrowser.webViewContainer.removeAllViews()
