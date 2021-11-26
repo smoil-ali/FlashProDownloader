@@ -26,6 +26,7 @@ import com.reactive.flashprodownloader.databinding.FragmentHomeBinding
 import com.reactive.flashprodownloader.Helper.Utils
 import com.reactive.flashprodownloader.Interfaces.*
 import com.reactive.flashprodownloader.WebView.CustomWebView
+import com.reactive.flashprodownloader.WebView.FsdEngine
 import com.reactive.flashprodownloader.model.*
 import kotlinx.coroutines.*
 import java.lang.NullPointerException
@@ -54,6 +55,7 @@ class HomeFragment : BaseFragment(), WebViewCallbacks, HomePageAdapterCallbacks
     lateinit var list: List<FlashWindow>
     lateinit var sdf: SimpleDateFormat
     var currentWebView: WebView? = null
+    var stopRun = true
     lateinit var sharedPrefernces: SharedPreferences
 
     private val videoList: MutableLiveData<MutableList<FlashLightDownloadPro>> = MutableLiveData()
@@ -64,6 +66,7 @@ class HomeFragment : BaseFragment(), WebViewCallbacks, HomePageAdapterCallbacks
         adapter = HomePageAdapter(requireContext(), listBrowsers, this)
         binding.homePage.iconRecycler.layoutManager = GridLayoutManager(requireContext(), 5)
         binding.homePage.iconRecycler.adapter = adapter
+        stopRun = true
         videoList.value = mutableListOf()
 
         binding.homePage.searchUrl.setOnEditorActionListener { textView, i, keyEvent ->
@@ -129,6 +132,10 @@ class HomeFragment : BaseFragment(), WebViewCallbacks, HomePageAdapterCallbacks
 
         videoList.observe(requireActivity(), androidx.lifecycle.Observer {
             Log.i(TAG, "onViewCreated: hm yha b h ${it.size}")
+            if (it.isNotEmpty()){
+                binding.homeBrowser.downloadButton
+                    .startAnimation(Constants.loadAnimation(requireContext()))
+            }
             binding.homeBrowser.downloadButton.isEnabled = it.isNotEmpty()
         })
 
@@ -340,6 +347,7 @@ class HomeFragment : BaseFragment(), WebViewCallbacks, HomePageAdapterCallbacks
             binding.homeBrowser.pbPageLoading.visibility = View.VISIBLE
             currentWebView!!.loadUrl(currentWindow.url!!)
         }
+        stopRun = true
         setOnBackPressedListener(this)
         binding.homeBrowser.searchUrl.setText(currentWindow.url)
         currentWebView!!.requestFocus()
@@ -362,6 +370,7 @@ class HomeFragment : BaseFragment(), WebViewCallbacks, HomePageAdapterCallbacks
                 currentWindow.url!!, currentWindow.path!!
             )
         }
+
     }
 
     private fun newWebView(): WebView {
@@ -443,6 +452,7 @@ class HomeFragment : BaseFragment(), WebViewCallbacks, HomePageAdapterCallbacks
 
     override fun OnSelect(home: FlashHome) {
 
+        stopRun = true
         binding.homeBrowser.webViewContainer.removeAllViews()
         currentWindow.url = home.url
         currentWindow.title = home.title
@@ -460,6 +470,7 @@ class HomeFragment : BaseFragment(), WebViewCallbacks, HomePageAdapterCallbacks
     override fun onBackPressed() {
         Log.i(TAG, "onBackPressed: ${currentWebView?.canGoBack()}")
         if (currentWebView!!.canGoBack()) {
+            stopRun = false
             videoList.value = mutableListOf()
             currentWebView!!.goBack()
         } else {
@@ -469,8 +480,8 @@ class HomeFragment : BaseFragment(), WebViewCallbacks, HomePageAdapterCallbacks
             currentWindow.title = Constants.BLANK_URL
             currentWindow.url = Constants.BLANK_URL
             currentWindow.path = Constants.BLANK_URL
-            videoList.value?.clear()
-            videoList.value = videoList.value
+            stopRun = false
+            videoList.value = mutableListOf()
             updateData()
             setOnBackPressedListener(null)
         }
@@ -483,8 +494,8 @@ class HomeFragment : BaseFragment(), WebViewCallbacks, HomePageAdapterCallbacks
         currentWindow.title = Constants.BLANK_URL
         currentWindow.path = Constants.BLANK_URL
         map.remove(currentWindow.id)
-        videoList.value?.clear()
-        videoList.value = videoList.value
+        FsdEngine.stopEngine()
+        videoList.value = mutableListOf()
         updateData()
     }
 
@@ -535,39 +546,41 @@ class HomeFragment : BaseFragment(), WebViewCallbacks, HomePageAdapterCallbacks
     }
 
     override fun milGaiVideo(lightDownloadPro: FlashLightDownloadPro) {
-        Log.i(TAG, "milGaiVideo: $lightDownloadPro")
-        if (lightDownloadPro.website == "dailymotion.com") {
-            currentWindow.url = lightDownloadPro.link
-            currentWindow.title = lightDownloadPro.website
-            updateData()
-            binding.homeBrowser.searchUrl.setText(lightDownloadPro.link)
-            val sb = StringBuilder(lightDownloadPro.link!!)
-            sb.insert(27, Constants.JSON)
-            sb.append(Constants.TITLE + "," + Constants.HD)
-            lightDownloadPro.link = sb.toString()
-            videoList.value?.clear()
-            videoList.value?.add(lightDownloadPro)
-            videoList.value = videoList.value
-        } else if (lightDownloadPro.website == "vimeo.com") {
-            videoList.value?.clear()
-            videoList.value?.add(lightDownloadPro)
-            videoList.value = videoList.value
-        } else if (lightDownloadPro.website == "facebook.com") {
-            if (same(lightDownloadPro.link!!)) {
+            Log.i(TAG, "milGaiVideo: $lightDownloadPro")
+
+            if (lightDownloadPro.website == "dailymotion.com") {
+                currentWindow.url = lightDownloadPro.link
+                currentWindow.title = lightDownloadPro.website
+                updateData()
+                binding.homeBrowser.searchUrl.setText(lightDownloadPro.link)
+                val sb = StringBuilder(lightDownloadPro.link!!)
+                sb.insert(27, Constants.JSON)
+                sb.append(Constants.TITLE + "," + Constants.HD)
+                lightDownloadPro.link = sb.toString()
+                videoList.value?.clear()
                 videoList.value?.add(lightDownloadPro)
                 videoList.value = videoList.value
-            }
-        } else if (lightDownloadPro.website == "like.com") {
-            if (same(lightDownloadPro.link!!)) {
+            } else if (lightDownloadPro.website == "vimeo.com") {
+                videoList.value?.clear()
+                videoList.value?.add(lightDownloadPro)
+                videoList.value = videoList.value
+            } else if (lightDownloadPro.website == "facebook.com") {
+                if (same(lightDownloadPro.link!!)) {
+                    videoList.value?.add(lightDownloadPro)
+                    videoList.value = videoList.value
+                }
+            } else if (lightDownloadPro.website == "like.com") {
+                if (same(lightDownloadPro.link!!)) {
+                    videoList.value?.add(lightDownloadPro)
+                    videoList.value = videoList.value
+                }
+
+            } else if (lightDownloadPro.website == "imdb.com") {
+                videoList.value?.clear()
                 videoList.value?.add(lightDownloadPro)
                 videoList.value = videoList.value
             }
 
-        } else if (lightDownloadPro.website == "imdb.com") {
-            videoList.value?.clear()
-            videoList.value?.add(lightDownloadPro)
-            videoList.value = videoList.value
-        }
     }
 
     override fun NotFound() {

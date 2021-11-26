@@ -3,6 +3,8 @@ package com.reactive.flashprodownloader.Helper;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 
 import com.reactive.flashprodownloader.R;
 
@@ -155,5 +157,9 @@ public class Constants {
 //            myBitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
 //        }
 //        return myBitmap;
+    }
+
+    public static Animation loadAnimation(Context context){
+        return AnimationUtils.loadAnimation(context,R.anim.shake);
     }
 }

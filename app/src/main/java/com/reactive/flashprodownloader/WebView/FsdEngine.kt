@@ -4,10 +4,7 @@ import android.util.Log
 import com.reactive.flashprodownloader.Helper.Utils
 import com.reactive.flashprodownloader.model.FlashLightDownloadPro
 import com.reactive.flashprodownloader.Interfaces.WebViewCallbacks
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancelChildren
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import java.net.URL
 import java.net.URLConnection
 
@@ -203,7 +200,7 @@ object FsdEngine {
     }
 
     fun stopEngine(){
-        coroutineScope.coroutineContext.cancelChildren()
+        Log.i(TAG, "stopEngine: called")
     }
 
 }
