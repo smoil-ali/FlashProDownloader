@@ -3,6 +3,7 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="../../../../layout/custom_preview.xml" value="0.15" />
         <entry key="app/src/main/res/drawable-v24/ad_new_tab_selected_bg.xml" value="0.13055555555555556" />
         <entry key="app/src/main/res/drawable-v24/add.xml" value="0.13055555555555556" />
         <entry key="app/src/main/res/drawable-v24/add_new_tab_bg.xml" value="0.13055555555555556" />
@@ -19,6 +20,7 @@
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.19322916666666667" />
         <entry key="app/src/main/res/layout/activity_splash.xml" value="0.19322916666666667" />
         <entry key="app/src/main/res/layout/activity_tab.xml" value="0.19322916666666667" />
+        <entry key="app/src/main/res/layout/activity_test.xml" value="0.178125" />
         <entry key="app/src/main/res/layout/fragment_complete.xml" value="0.19322916666666667" />
         <entry key="app/src/main/res/layout/fragment_home.xml" value="0.19322916666666667" />
         <entry key="app/src/main/res/layout/fragment_progress.xml" value="0.19322916666666667" />

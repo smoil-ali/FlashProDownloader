@@ -15,8 +15,7 @@
         <activity
             android:name=".Activities.Splash"
             android:exported="true"
-            android:screenOrientation="portrait"
-            >
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -30,7 +29,7 @@
         <activity
             android:name=".Activities.MainActivity"
             android:exported="true"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".Activities.HistoryActivity"
             android:exported="true"

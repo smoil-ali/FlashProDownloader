@@ -55,6 +55,7 @@ class HomeFragment : BaseFragment(), WebViewCallbacks, HomePageAdapterCallbacks
     lateinit var list: List<FlashWindow>
     lateinit var sdf: SimpleDateFormat
     var currentWebView: WebView? = null
+    var customWebView: CustomWebView? = null
     var stopRun = true
     lateinit var sharedPrefernces: SharedPreferences
 
@@ -131,7 +132,7 @@ class HomeFragment : BaseFragment(), WebViewCallbacks, HomePageAdapterCallbacks
 
 
         videoList.observe(requireActivity(), androidx.lifecycle.Observer {
-            Log.i(TAG, "onViewCreated: hm yha b h ${it.size}")
+            Log.i(TAG, "onViewCreated: hm yha b h ${it.size} $it")
             if (it.isNotEmpty()){
                 binding.homeBrowser.downloadButton
                     .startAnimation(Constants.loadAnimation(requireContext()))
@@ -338,12 +339,12 @@ class HomeFragment : BaseFragment(), WebViewCallbacks, HomePageAdapterCallbacks
 
     private fun loadWebView() {
         binding.homeBrowser.webViewContainer.removeAllViews()
+        videoList.value = mutableListOf()
         if (getMyWebView()) {
             Log.i(TAG, "loadwebView: current webview null")
             currentWebView = map[currentWindow.id]!!
             binding.homeBrowser.webViewContainer.addView(currentWebView, 0)
         } else {
-            videoList.value = mutableListOf()
             currentWebView = newWebView()
             map.put(currentWindow.id, currentWebView!!)
             binding.homeBrowser.webViewContainer.addView(currentWebView, 0)
@@ -377,7 +378,8 @@ class HomeFragment : BaseFragment(), WebViewCallbacks, HomePageAdapterCallbacks
     }
 
     private fun newWebView(): WebView {
-        return CustomWebView(this, currentWindow, requireContext())
+        customWebView = CustomWebView(this, currentWindow, requireContext())
+        return customWebView!!.getWebView()
     }
 
 
@@ -485,6 +487,7 @@ class HomeFragment : BaseFragment(), WebViewCallbacks, HomePageAdapterCallbacks
             currentWindow.path = Constants.BLANK_URL
             stopRun = false
             currentWebView = null
+            customWebView?.stopEngine()
             videoList.value = mutableListOf()
             updateData()
             setOnBackPressedListener(null)
@@ -498,7 +501,7 @@ class HomeFragment : BaseFragment(), WebViewCallbacks, HomePageAdapterCallbacks
         currentWindow.title = Constants.BLANK_URL
         currentWindow.path = Constants.BLANK_URL
         map.remove(currentWindow.id)
-        FsdEngine.stopEngine()
+        customWebView?.stopEngine()
         videoList.value = mutableListOf()
         updateData()
     }
@@ -552,6 +555,7 @@ class HomeFragment : BaseFragment(), WebViewCallbacks, HomePageAdapterCallbacks
     override fun milGaiVideo(lightDownloadPro: FlashLightDownloadPro) {
             Log.i(TAG, "milGaiVideo: $lightDownloadPro")
 
+        try {
             if (lightDownloadPro.website == "dailymotion.com") {
                 currentWindow.url = lightDownloadPro.link
                 currentWindow.title = lightDownloadPro.website
@@ -584,6 +588,11 @@ class HomeFragment : BaseFragment(), WebViewCallbacks, HomePageAdapterCallbacks
                 videoList.value?.add(lightDownloadPro)
                 videoList.value = videoList.value
             }
+        }catch (e:CancellationException){
+            Log.i(TAG, "milGaiVideo: cancellation ${e.message}")
+        }
+
+
 
     }
 

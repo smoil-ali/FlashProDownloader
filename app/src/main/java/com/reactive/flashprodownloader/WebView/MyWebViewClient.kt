@@ -14,6 +14,7 @@ import com.reactive.flashprodownloader.Interfaces.WebViewCallbacks
 import android.webkit.JavascriptInterface
 import com.reactive.flashprodownloader.Helper.Utils
 import com.reactive.flashprodownloader.model.FlashWindow
+import kotlinx.coroutines.*
 
 
 @SuppressLint("JavascriptInterface")
@@ -24,10 +25,15 @@ class MyWebViewClient(
     val customWebView: CustomWebView
 ): WebViewClient() {
     private val TAG = MyWebViewClient::class.simpleName
+    var coroutineScope: CoroutineScope
 
     init {
         Log.i(TAG, "init: start ")
-        customWebView.addJavascriptInterface(this, "browser");
+        coroutineScope = CoroutineScope(Dispatchers.Main)
+    }
+
+    fun stopEngine(){
+        coroutineScope.coroutineContext.cancel()
     }
 
     override fun onLoadResource(view: WebView?, url: String?) {
@@ -45,14 +51,25 @@ class MyWebViewClient(
         var urlMightBeVideo = false
         for (filter in filters) {
             if (mLowerCase!!.contains(filter)) {
-                Log.i(TAG, "onLoadResource: $mLowerCase")
                 urlMightBeVideo = true
                 break
             }
         }
 
         if (urlMightBeVideo){
-            FsdEngine.startEngine(url!!, page!!,title,listener)
+             coroutineScope.launch {
+                 val flashLightDownloadPro = Engine.startEngine(url!!, page!!,title)
+                 if (coroutineScope.coroutineContext.isActive){
+                     if (flashLightDownloadPro.link != null){
+                         Log.i(TAG, "onLoadResource: active")
+                         listener.milGaiVideo(flashLightDownloadPro)
+                     }
+                 }else{
+                     Log.i(TAG, "onLoadResource: not active")
+                 }
+                 
+
+            }
         }
     }
 
@@ -95,10 +112,5 @@ class MyWebViewClient(
     }
 
 
-    @JavascriptInterface
-    fun getVideoData(link: String){
-        Utils.showToast(customWebView.context,link)
-        Log.i(TAG, "getVideoData: $link")
-    }
 
 }
