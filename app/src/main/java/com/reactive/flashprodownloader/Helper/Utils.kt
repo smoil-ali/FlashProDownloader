@@ -212,6 +212,18 @@ class Utils {
                 false
             )
         }
+
+        fun getProgress(downloaded: Long, total: Long): Int {
+            return if (total < 1) {
+                -1
+            } else if (downloaded < 1) {
+                0
+            } else if (downloaded >= total) {
+                100
+            } else {
+                (downloaded.toDouble() / total.toDouble() * 100).toInt()
+            }
+        }
     }
 
 }

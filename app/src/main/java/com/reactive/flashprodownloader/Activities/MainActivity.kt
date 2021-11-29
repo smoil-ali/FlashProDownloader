@@ -2,12 +2,15 @@ package com.reactive.flashprodownloader.Activities
 
 import android.app.AlertDialog
 import android.content.DialogInterface
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import com.reactive.flashprodownloader.Adapter.FragmentViewPager
 import com.reactive.flashprodownloader.Helper.Constants
+import com.reactive.flashprodownloader.Helper.Utils
 import com.reactive.flashprodownloader.Interfaces.*
 import com.reactive.flashprodownloader.R
 import com.reactive.flashprodownloader.databinding.ActivityMainBinding
@@ -56,6 +59,10 @@ class MainActivity : BaseActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+
+        if (intent.extras != null){
+            Utils.showToast(this, intent.extras!!.getBoolean(Constants.PARAMS).toString())
+        }
 
         loadList()
         fragmentViewPager = FragmentViewPager(this)
@@ -220,6 +227,12 @@ class MainActivity : BaseActivity() {
                 R.drawable.completed_icon
             )
         )
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        Log.i(TAG, "onNewIntent: called")
+        Utils.showToast(this,"intent")
     }
 
 
