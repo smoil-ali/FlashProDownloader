@@ -17,6 +17,7 @@ import com.downloader.OnDownloadListener
 import com.downloader.PRDownloader
 import com.downloader.PRDownloaderConfig
 import com.reactive.flashprodownloader.Activities.MyService
+import com.reactive.flashprodownloader.Activities.MyService2
 import com.reactive.flashprodownloader.Adapter.ProgressAdapter
 import com.reactive.flashprodownloader.Helper.Constants
 import com.reactive.flashprodownloader.Helper.PR
@@ -43,7 +44,7 @@ import com.tonyodev.fetch2core.DownloadBlock
 
 
 class ProgressFragment : BaseFragment(), MainActivityListener, OnBackPressedListener,
-    ProgressListener,FetchListener {
+    ProgressListener{
     companion object{
         var CHECK = false
     }
@@ -139,10 +140,10 @@ class ProgressFragment : BaseFragment(), MainActivityListener, OnBackPressedList
 
 
     private fun getData(){
-        flashDao.getProgressDownloads(false).observe(requireActivity(), Observer {
+        flashDao.getProgressDownloads(Constants.PROGRESS).observe(requireActivity(), Observer {
             Log.i(TAG, "getData: ${it}")
             adapter.setData(it)
-            if(it.isNotEmpty()){
+            if(it.isNotEmpty() ){
                 binding.alertTitle.visibility = View.GONE
             }else{
                 binding.alertTitle.visibility = View.VISIBLE
@@ -154,46 +155,18 @@ class ProgressFragment : BaseFragment(), MainActivityListener, OnBackPressedList
     override fun onStart(lightDownload: MutableLiveData<FlashLightDownload>,
                          holder: ProgressAdapter.MyViewHolder) {
         itemLightDownload = lightDownload.value!!
-        val serviceIntent = Intent(requireContext(), MyService::class.java)
+        val serviceIntent = Intent(requireContext(), MyService2::class.java)
         serviceIntent.putExtra(Constants.PARAMS, lightDownload.value)
         startForegroundService(requireContext(), serviceIntent)
-//        val exist:FlashLightDownloadsIds? = PR.existId(lightDownload.value!!.id)
-//        Log.i(TAG, "onStart: $exist")
-//        if (exist == null){
-//            ids.value = PRDownloader.download(lightDownload.value!!.url, lightDownload.value!!.path,
-//                lightDownload.value!!.title)
-//                .build()
-//                .setOnStartOrResumeListener {
-//                    Log.i(TAG, "onStart resume: $ids")
-//                }
-//                .setOnPauseListener {
-//                    Log.i(TAG, "on pause: ")
-//                }
-//                .setOnCancelListener {
-//                    Log.i(TAG, "on cancel: ")
-//                }
-//                .setOnProgressListener {
-//                    val result = (it.currentBytes * 100) / it.totalBytes
-//                    Log.i(TAG, "onStart: $result")
-//                    holder.binding.circularProgressBar.progress = result.toInt()
-//                }
-//                .start(object : OnDownloadListener {
-//                    override fun onDownloadComplete() {
-//                        Log.i(TAG, "onDownloadComplete: ")
-//                        if (isAdded){
-//                            PR.deleteId(lightDownload.value!!.id)
-//                            update(lightDownload)
-//                        }
-//
-//                    }
-//                    override fun onError(error: com.downloader.Error?) {
-//                        Log.i(TAG, "onError: ${error.toString()}")
-//                    }
-//                })
-//        }else{
-//            PRDownloader.resume(exist.downloadId)
-//        }
+        Log.i(TAG, "onStart: ")
 
+        flashDao.getProgressById(itemLightDownload.id).observe(requireActivity(),
+            Observer {
+                    if (it != null){
+                        Log.i(TAG, "onStart: $it")
+                        holder.binding.circularProgressBar.progress = it.progress
+                    }
+            })
 
     }
 
@@ -234,14 +207,6 @@ class ProgressFragment : BaseFragment(), MainActivityListener, OnBackPressedList
     }
 
 
-
-    private fun update(lightDownload: LiveData<FlashLightDownload>){
-        coroutineScope.launch(Dispatchers.Default) {
-            flashDao.updateDownload(true,lightDownload.value!!.id,
-                Utils.getDownloadVideoPath(requireContext()))
-        }
-    }
-
     private fun cancelDownloading(){
         coroutineScope.launch {
             val its = idsList.iterator()
@@ -279,78 +244,4 @@ class ProgressFragment : BaseFragment(), MainActivityListener, OnBackPressedList
         idsList.clear()
         CHECK = false
     }
-
-
-
-
-    fun fetchDownloader(lightDownload: MutableLiveData<FlashLightDownload>){
-        val serviceIntent = Intent(requireContext(), MyService::class.java)
-        serviceIntent.putExtra(Constants.PARAMS, lightDownload.value)
-        startForegroundService(requireContext(), serviceIntent)
-    }
-
-    override fun onAdded(download: Download) {
-        Log.i(TAG, "onAdded: ")
-    }
-
-    override fun onCancelled(download: Download) {
-        Log.i(TAG, "onCancelled: ")
-    }
-
-    override fun onCompleted(download: Download) {
-        Log.i(TAG, "onCompleted: ")
-    }
-
-    override fun onDeleted(download: Download) {
-        Log.i(TAG, "onDeleted: ")
-    }
-
-    override fun onDownloadBlockUpdated(
-        download: Download,
-        downloadBlock: DownloadBlock,
-        totalBlocks: Int
-    ) {
-        Log.i(TAG, "onDownloadBlockUpdated: ")
-    }
-
-    override fun onError(download: Download, error: Error, throwable: Throwable?) {
-        Log.i(TAG, "onError: $error ${download.fileUri}")
-    }
-
-    override fun onPaused(download: Download) {
-        Log.i(TAG, "onPaused: ")
-    }
-
-    override fun onProgress(
-        download: Download,
-        etaInMilliSeconds: Long,
-        downloadedBytesPerSecond: Long
-    ) {
-        Log.i(TAG, "onProgress: $etaInMilliSeconds $downloadedBytesPerSecond ${download.progress}")
-    }
-
-    override fun onQueued(download: Download, waitingOnNetwork: Boolean) {
-        Log.i(TAG, "onQueued: ")
-    }
-
-    override fun onRemoved(download: Download) {
-        Log.i(TAG, "onRemoved: ")
-    }
-
-    override fun onResumed(download: Download) {
-        Log.i(TAG, "onResumed: ")
-    }
-
-    override fun onStarted(
-        download: Download,
-        downloadBlocks: List<DownloadBlock>,
-        totalBlocks: Int
-    ) {
-        Log.i(TAG, "onStarted: ")
-    }
-
-    override fun onWaitingNetwork(download: Download) {
-        Log.i(TAG, "onWaitingNetwork: ")
-    }
-
 }

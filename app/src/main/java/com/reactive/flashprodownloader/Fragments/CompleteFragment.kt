@@ -66,12 +66,6 @@ class CompleteFragment : BaseFragment(),MainActivityListener,OnBackPressedListen
         binding.recycler.adapter = adapter
 
 
-
-
-
-
-
-
     }
 
 
@@ -114,7 +108,7 @@ class CompleteFragment : BaseFragment(),MainActivityListener,OnBackPressedListen
     }
 
     private fun getData(){
-        flashDao.getCompleteDownloads(true).observe(requireActivity(), Observer {
+        flashDao.getCompleteDownloads(Constants.COMPLETE).observe(requireActivity(), Observer {
             Log.i(TAG, "getData: ${it}")
             adapter.setData(it.reversed())
             if(it.isNotEmpty()){

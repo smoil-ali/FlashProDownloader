@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.INTERNET" />
 
+
     <application
         android:name=".MyApp"
         android:allowBackup="false"
@@ -14,16 +15,20 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.FlashProDownloader">
         <service
-            android:name=".Activities.MyIntentService"
-            android:exported="false"></service>
+            android:name=".Activities.MyService2"
+            android:enabled="true"
+            android:exported="true"></service>
         <service
             android:name=".Activities.MyService"
             android:enabled="true"
-            android:exported="true" />
+            android:exported="false" />
 
         <activity
+            android:name=".Activities.DownloadDemo"
+            android:exported="true" />
+        <activity
             android:name=".Activities.TestActivity"
-            android:exported="true"></activity>
+            android:exported="true" />
         <activity
             android:name=".Activities.Splash"
             android:exported="true"

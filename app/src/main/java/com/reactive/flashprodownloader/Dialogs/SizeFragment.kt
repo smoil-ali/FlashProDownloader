@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.reactive.flashprodownloader.Adapter.SizeAdapter
+import com.reactive.flashprodownloader.Helper.Constants
 import com.reactive.flashprodownloader.Helper.Utils
 import com.reactive.flashprodownloader.Interfaces.SizeFragmentListener
 import com.reactive.flashprodownloader.databinding.FragmentSizeBinding
@@ -95,7 +96,7 @@ class SizeFragment(private val videoList: List<FlashLightDownloadPro>?) : BaseFr
                 list.add(FlashLightDownload(0, it.link!!,
                     title,path,Utils.getStringSizeLengthFile(fileLength)
                     ,fileLength,false,
-                    false))
+                    Constants.PROGRESS))
                 binding.loading.visibility = View.GONE
                 adapter.notifyDataSetChanged()
             }else if (it.website == "like.com"){
@@ -105,7 +106,7 @@ class SizeFragment(private val videoList: List<FlashLightDownloadPro>?) : BaseFr
                 list.add(FlashLightDownload(0, it.link!!,
                     title,path,Utils.getStringSizeLengthFile(fileLength)
                     ,fileLength,false,
-                    false))
+                    Constants.PROGRESS))
                 binding.loading.visibility = View.GONE
                 adapter.notifyDataSetChanged()
             }else if (it.website == "imdb.com"){
@@ -115,7 +116,7 @@ class SizeFragment(private val videoList: List<FlashLightDownloadPro>?) : BaseFr
                 list.add(FlashLightDownload(0, it.link!!,
                     title,path,Utils.getStringSizeLengthFile(fileLength)
                     ,fileLength,false,
-                    false))
+                    Constants.PROGRESS))
                 binding.loading.visibility = View.GONE
                 adapter.notifyDataSetChanged()
             }
@@ -161,7 +162,7 @@ class SizeFragment(private val videoList: List<FlashLightDownloadPro>?) : BaseFr
                                         }
                                         list.add(FlashLightDownload(0,obj.getString("url"),title,path
                                             ,Utils.getStringSizeLengthFile(fileLength),fileLength,
-                                            false,false))
+                                            false,Constants.PROGRESS))
                                         adapter.notifyDataSetChanged()
                                         binding.loading.visibility = View.GONE
                                     }
@@ -255,7 +256,7 @@ class SizeFragment(private val videoList: List<FlashLightDownloadPro>?) : BaseFr
         val title = str.name + sdf.format(Date())+".mp4"
         val path = Utils.getDownloadVideoPath(requireContext())
         list.add(FlashLightDownload(0,dailymotionResponse.stream_h264_sd_url!!,
-            title,path,str.size!!,fileLength,false,false))
+            title,path,str.size!!,fileLength,false,Constants.PROGRESS))
         adapter.notifyDataSetChanged()
     }
 

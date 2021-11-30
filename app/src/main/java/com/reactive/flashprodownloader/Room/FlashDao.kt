@@ -1,14 +1,8 @@
 package com.reactive.flashprodownloader.Room
 
 import androidx.lifecycle.LiveData
-import androidx.room.Dao
-import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.Query
-import com.reactive.flashprodownloader.model.FlashBookmark
-import com.reactive.flashprodownloader.model.FlashHistory
-import com.reactive.flashprodownloader.model.FlashLightDownload
-import com.reactive.flashprodownloader.model.FlashWindow
+import androidx.room.*
+import com.reactive.flashprodownloader.model.*
 
 
 @Dao
@@ -28,20 +22,29 @@ interface FlashDao {
     @Query("SELECT * FROM FlashHistory")
     fun getHistory(): LiveData<MutableList<FlashHistory>>
 
-    @Query("SELECT * FROM FlashLightDownload WHERE status=:status")
-    fun getProgressDownloads(status: Boolean): LiveData<List<FlashLightDownload>>
+    @Query("SELECT * FROM FlashLightDownload WHERE status=:progress")
+    fun getProgressDownloads(progress: String): LiveData<List<FlashLightDownload>>
 
     @Query("SELECT * FROM FlashLightDownload WHERE status=:status")
-    fun getCompleteDownloads(status: Boolean): LiveData<List<FlashLightDownload>>
+    fun getCompleteDownloads(status: String): LiveData<List<FlashLightDownload>>
 
     @Query("UPDATE FlashLightDownload SET status=:status,path=:path WHERE id=:id")
-    suspend fun updateDownload(status: Boolean,id : Int,path: String)
+    suspend fun updateDownload(status: String,id : Int,path: String)
 
     @Query("UPDATE FlashWindow SET title=:title,url=:url,path=:path WHERE id=:id")
     suspend fun updateFlashWindow(id:Int,title:String,url:String,path:String)
 
     @Query("DELETE FROM FlashLightDownload WHERE id=:id")
     suspend fun deleteLightDownload(id: Int)
+
+    @Query("UPDATE FlashProgress SET progress=:progress WHERE videoId=:videoId")
+    suspend fun updateProgress(videoId: Int,progress: Int)
+
+    @Query("SELECT * FROM FlashProgress WHERE videoId=:videoId")
+    fun getProgressById(videoId: Int): LiveData<FlashProgress>
+
+    @Query("DELETE FROM FlashProgress WHERE videoId=:videoId")
+    suspend fun deleteFlashProgress(videoId: Int)
 
     @Insert
     suspend fun createNewFlashWindow(FlashWindow: FlashWindow)
@@ -54,6 +57,9 @@ interface FlashDao {
 
     @Insert
     suspend fun addDownload(lightDownload: FlashLightDownload)
+
+    @Insert
+    suspend fun addProgress(flashProgress: FlashProgress)
 
     @Delete
     suspend fun deleteFlashWindow(FlashWindow: FlashWindow)

@@ -22,6 +22,6 @@ data class FlashLightDownload(
     @ColumnInfo
     var selected: Boolean,
     @ColumnInfo
-    val status: Boolean
+    val status: String
 
 ): Serializable

@@ -60,9 +60,7 @@ class MainActivity : BaseActivity() {
         setContentView(binding.root)
 
 
-        if (intent.extras != null){
-            Utils.showToast(this, intent.extras!!.getBoolean(Constants.PARAMS).toString())
-        }
+
 
         loadList()
         fragmentViewPager = FragmentViewPager(this)
@@ -70,7 +68,12 @@ class MainActivity : BaseActivity() {
         binding.pager.isUserInputEnabled = false
 
 
-        if (savedInstanceState == null){
+        if (intent.extras != null){
+            downloadSelectIcon()
+            homeNormal()
+            completeNormal()
+            binding.pager.currentItem = 1
+        }else if (savedInstanceState == null){
             homeSelectIcon()
             downloadNormal()
             completeNormal()

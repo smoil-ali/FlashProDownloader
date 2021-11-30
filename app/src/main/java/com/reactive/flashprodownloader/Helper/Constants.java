@@ -78,6 +78,9 @@ public class Constants {
             "links[i].parentNode.removeChild(links[i]);}}}catch(e){}}" +
             "getVideoLink();";
     public static final int TAB = 77;
+    public static final String PENDING = "Pending";
+    public static final String PROGRESS = "Progress";
+    public static final String COMPLETE = "Complete";
     public static final String AUTHORITY = "com.reactive.flashprodownloader.fileProvider";
     public static final String PACKAGE_NAME = "com.reactive.FlashProDownloader";
     public static final String BASE_URL = "https://www.dailymotion.com/";
