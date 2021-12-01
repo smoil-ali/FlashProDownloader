@@ -509,6 +509,7 @@ class HomeFragment : BaseFragment(), WebViewCallbacks, HomePageAdapterCallbacks
 
     override fun onDestroy() {
         super.onDestroy()
+        currentWebView?.destroy()
         coroutineScope.coroutineContext.cancelChildren()
         sharedPrefernces.unregisterOnSharedPreferenceChangeListener(this)
     }
@@ -619,6 +620,8 @@ class HomeFragment : BaseFragment(), WebViewCallbacks, HomePageAdapterCallbacks
         super.onPause()
         currentWebView?.onPause()
     }
+
+
 
 
 }

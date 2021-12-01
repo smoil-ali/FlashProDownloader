@@ -36,22 +36,23 @@ import com.tonyodev.fetch2core.DownloadBlock
 import kotlinx.coroutines.*
 import java.lang.Process
 
-class MyService : Service() {
+class MyService : LifecycleService() {
     private val TAG = MyService::class.simpleName
     private val CHANNEL_ID = Constants.PACKAGE_NAME
     private var ids: MutableLiveData<Int> = MutableLiveData()
     lateinit var builder:NotificationCompat.Builder
-    private lateinit var itemLightDownload: FlashLightDownload
+//    private lateinit var itemLightDownload: FlashLightDownload
     private val coroutineScope = CoroutineScope(Dispatchers.Main)
     lateinit var flashDao: FlashDao
     override fun onCreate() {
+        super.onCreate()
         Log.i(TAG, "onCreate: ")
-//        val config = PRDownloaderConfig.newBuilder()
-//            .setDatabaseEnabled(true)
-//            .build()
-//        PRDownloader.initialize(this, config)
-//
-//        flashDao = MyApp.instance.flashDao
+        val config = PRDownloaderConfig.newBuilder()
+            .setDatabaseEnabled(true)
+            .build()
+        PRDownloader.initialize(this, config)
+
+        flashDao = MyApp.instance.flashDao
 
         showNotification()
 
@@ -62,73 +63,80 @@ class MyService : Service() {
 //                PR.addDownloadId(FlashLightDownloadsIds(0,it,itemLightDownload.id))
 //            }
 //        })
-//
-//        flashDao.getProgressDownloads(Constants.PROGRESS).observe(this, Observer {
-//            Log.i(TAG, "onCreate: $it")
-//            if (it.isEmpty()){
-//                stopSelf()
-//            }
-//        })
+
+        flashDao.getProgressDownloads(Constants.PROGRESS).observe(this, Observer {
+            Log.i(TAG, "onCreate: $it")
+            if (it.isEmpty()){
+                stopSelf()
+            }
+        })
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        super.onStartCommand(intent, flags, startId)
 
-
-        showNotification()
-        itemLightDownload = intent?.extras?.getSerializable(Constants.PARAMS) as FlashLightDownload
-//        val exist:FlashLightDownloadsIds? = PR.existId(itemLightDownload.id)
+        coroutineScope.launch(Dispatchers.Default) {
+        val itemLightDownload = intent?.extras?.getSerializable(Constants.PARAMS) as FlashLightDownload
+        val exist:FlashLightDownloadsIds? = PR.existId(itemLightDownload.id)
         Log.i(TAG, "onStartCommand: $itemLightDownload")
-//        if (exist == null){
-//            ids.value = PRDownloader.download(itemLightDownload.url,
-//                itemLightDownload.path,
-//                itemLightDownload.title)
-//                .build()
-//                .setOnStartOrResumeListener {
-//                    Log.i(TAG, "onStart resume: ${ids.value}")
-////                    coroutineScope.launch(Dispatchers.Default) {
-////                        flashDao.addProgress(FlashProgress(0,itemLightDownload.id,0))
-////                    }
-//                }
-//                .setOnPauseListener {
-//                    Log.i(TAG, "on pause: ")
-//                }
-//                .setOnCancelListener {
-//                    Log.i(TAG, "on cancel: ")
-//                }
-//                .setOnProgressListener {
-//                    val result = (it.currentBytes * 100) / it.totalBytes
-////                    coroutineScope.launch(Dispatchers.Default) {
-////                        flashDao.updateProgress(itemLightDownload.id
-////                            ,result.toInt())
-////                    }
-//                }
-//                .start(object : OnDownloadListener {
-//                    override fun onDownloadComplete() {
-//                        Log.i(TAG, "onDownloadComplete: ")
-////                        PR.deleteId(itemLightDownload.id)
-////                        coroutineScope.launch(Dispatchers.Default) {
-////                            flashDao.deleteFlashProgress(itemLightDownload.id)
-////                        }
-////                        update(itemLightDownload,Constants.COMPLETE);
-//                    }
-//                    override fun onError(error: com.downloader.Error?) {
-//                        Log.i(TAG, "onError: ${error.toString()}")
-//                    }
-//                })
-//        }else{
-//            PRDownloader.resume(exist.downloadId)
-//        }
+            if (true){
+                PRDownloader.download(itemLightDownload.url,
+                    itemLightDownload.path,
+                    itemLightDownload.title)
+                    .build()
+                    .setOnStartOrResumeListener {
+                        Log.i(TAG, "onStart resume: ${ids.value}")
+                        coroutineScope.launch(Dispatchers.Default) {
+                            flashDao.addProgress(FlashProgress(0,itemLightDownload.id,0))
+                        }
+                    }
+                    .setOnPauseListener {
+                        Log.i(TAG, "on pause: ")
+                    }
+                    .setOnCancelListener {
+                        Log.i(TAG, "on cancel: ")
+                    }
+                    .setOnProgressListener {
+                        val result = (it.currentBytes * 100) / it.totalBytes
+                        Log.i(TAG, "onStartCommand: $itemLightDownload.id $result")
+                        coroutineScope.launch(Dispatchers.Default) {
+                            flashDao.updateProgress(itemLightDownload.id
+                                ,result.toInt())
+                        }
+                    }
+                    .start(object : OnDownloadListener {
+                        override fun onDownloadComplete() {
+                            Log.i(TAG, "onDownloadComplete: ")
+                            PR.deleteId(itemLightDownload.id)
+                            coroutineScope.launch(Dispatchers.Default) {
+                                flashDao.deleteFlashProgress(itemLightDownload.id)
+                            }
+                            update(itemLightDownload,Constants.COMPLETE);
+                        }
+                        override fun onError(error: com.downloader.Error?) {
+                            Log.i(TAG, "onError: ${error.toString()}")
+                        }
+                    })
+            }else{
+                if (exist != null) {
+                    PRDownloader.resume(exist.downloadId)
+                }
+            }
+        }
+
 
         return START_STICKY
     }
 
     override fun onDestroy() {
+        super.onDestroy()
         Log.i(TAG, "onDestroy: ")
     }
 
 
 
     override fun onBind(intent: Intent): IBinder? {
+        super.onBind(intent)
         Log.i(TAG, "onBind: ")
         return null
     }

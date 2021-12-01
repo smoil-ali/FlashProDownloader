@@ -41,8 +41,8 @@ val list: MutableList<FlashLightDownload>):RecyclerView.Adapter<RecyclerView.Vie
         lightDownload.value = list[holder.adapterPosition]
         if (holder is MyViewHolder){
             Log.i(TAG, "onBindViewHolder: bhr")
-            holder.binding.playContainer.visibility = View.VISIBLE
-            holder.binding.pauseContainer.visibility = View.GONE
+            holder.binding.playContainer.visibility = View.GONE
+            holder.binding.pauseContainer.visibility = View.VISIBLE
             holder.binding.circularProgressBar.progress = 0
             holder.binding.container.background  =
                 ContextCompat.getDrawable(context,R.drawable.shadow_background)

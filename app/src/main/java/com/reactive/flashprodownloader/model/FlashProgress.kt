@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 
 @Entity
 data class FlashProgress(
-    @PrimaryKey (autoGenerate = true)
+    @PrimaryKey(autoGenerate = true)
     var id: Int,
     @ColumnInfo
     var videoId : Int,

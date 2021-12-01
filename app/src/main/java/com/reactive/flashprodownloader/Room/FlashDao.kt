@@ -43,6 +43,9 @@ interface FlashDao {
     @Query("SELECT * FROM FlashProgress WHERE videoId=:videoId")
     fun getProgressById(videoId: Int): LiveData<FlashProgress>
 
+    @Query("SELECT * FROM FlashProgress WHERE videoId=:videoId")
+    fun getSimpleProgressById(videoId: Int): FlashProgress
+
     @Query("DELETE FROM FlashProgress WHERE videoId=:videoId")
     suspend fun deleteFlashProgress(videoId: Int)
 

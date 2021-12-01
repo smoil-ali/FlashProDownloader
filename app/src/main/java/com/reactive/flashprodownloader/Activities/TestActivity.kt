@@ -76,7 +76,7 @@ class TestActivity : AppCompatActivity() {
 
 
     fun startService() {
-        val serviceIntent = Intent(this, MyService::class.java)
+        val serviceIntent = Intent(this, MyService2::class.java)
         serviceIntent.putExtra("inputExtra", "Foreground Service Example in Android")
         ContextCompat.startForegroundService(this, serviceIntent)
     }

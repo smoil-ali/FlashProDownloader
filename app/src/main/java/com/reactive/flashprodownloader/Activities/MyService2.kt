@@ -7,15 +7,23 @@ import android.app.Service
 import android.content.Intent
 import android.os.Build
 import android.os.IBinder
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.reactive.flashprodownloader.Helper.Constants
 import com.reactive.flashprodownloader.R
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class MyService2 : Service() {
     private val TAG = MyService2::class.simpleName
     private val CHANNEL_ID = Constants.PACKAGE_NAME
+    private val coroutineScope = CoroutineScope(Dispatchers.Main)
+    var i:Int = 0
     override fun onCreate() {
         super.onCreate()
+        showNotification()
     }
 
     override fun onBind(intent: Intent): IBinder? {
@@ -23,7 +31,14 @@ class MyService2 : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        showNotification()
+
+        coroutineScope.launch(Dispatchers.Default) {
+            while (true){
+                i++
+                Log.i(TAG, "onStartCommand: $i")
+                delay(1000)
+            }
+        }
         return START_NOT_STICKY
 
     }

@@ -29,18 +29,16 @@ import com.reactive.flashprodownloader.R
 import com.reactive.flashprodownloader.databinding.FragmentProgressBinding
 import com.reactive.flashprodownloader.model.FlashLightDownload
 import com.reactive.flashprodownloader.model.FlashLightDownloadsIds
+import com.reactive.flashprodownloader.model.FlashProgress
 import com.tonyodev.fetch2.*
 import com.tonyodev.fetch2core.Func
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import com.tonyodev.fetch2.Download
 
 import org.jetbrains.annotations.NotNull
 
 import com.tonyodev.fetch2.FetchListener
 import com.tonyodev.fetch2core.DownloadBlock
+import kotlinx.coroutines.*
 
 
 class ProgressFragment : BaseFragment(), MainActivityListener, OnBackPressedListener,
@@ -54,7 +52,7 @@ class ProgressFragment : BaseFragment(), MainActivityListener, OnBackPressedList
     private val coroutineScope = CoroutineScope(Dispatchers.Main)
     private val list:MutableList<FlashLightDownload> = mutableListOf()
     private lateinit var adapter: ProgressAdapter
-    private lateinit var itemLightDownload: FlashLightDownload
+//    private lateinit var itemLightDownload: FlashLightDownload
     private var ids: MutableLiveData<Int> = MutableLiveData()
     private val idsList:MutableList<MutableLiveData<FlashLightDownload>> = mutableListOf()
 
@@ -81,16 +79,16 @@ class ProgressFragment : BaseFragment(), MainActivityListener, OnBackPressedList
         PRDownloader.initialize(requireContext(), config)
 
 
+        getData()
 
 
-
-        ids.observe(requireActivity(), Observer {
-            Log.i(TAG, "onViewCreated: $ids")
-            if(it != 0){
-                Log.i(TAG, "onStart: $ids")
-                PR.addDownloadId(FlashLightDownloadsIds(0,it,itemLightDownload.id))
-            }
-        })
+//        ids.observe(requireActivity(), Observer {
+//            Log.i(TAG, "onViewCreated: $ids")
+//            if(it != 0){
+//                Log.i(TAG, "onStart: $ids")
+//                PR.addDownloadId(FlashLightDownloadsIds(0,it,itemLightDownload.id))
+//            }
+//        })
 
 
     }
@@ -106,7 +104,7 @@ class ProgressFragment : BaseFragment(), MainActivityListener, OnBackPressedList
     override fun onResume() {
         super.onResume()
         DownloadSelection()
-        getData()
+
 
         setMainActivityListener(this)
         setOnBackPressedListener(null)
@@ -154,35 +152,55 @@ class ProgressFragment : BaseFragment(), MainActivityListener, OnBackPressedList
 
     override fun onStart(lightDownload: MutableLiveData<FlashLightDownload>,
                          holder: ProgressAdapter.MyViewHolder) {
-        itemLightDownload = lightDownload.value!!
-        val serviceIntent = Intent(requireContext(), MyService2::class.java)
-        serviceIntent.putExtra(Constants.PARAMS, lightDownload.value)
-        startForegroundService(requireContext(), serviceIntent)
-        Log.i(TAG, "onStart: ")
+        val itemLightDownload = lightDownload.value!!
+
+        coroutineScope.launch(Dispatchers.Default) {
+            val data = flashDao.getSimpleProgressById(itemLightDownload.id)
+            Log.i(TAG, "onStart: $data")
+            coroutineScope.launch(Dispatchers.Main) {
+                if (data == null){
+                    val serviceIntent = Intent(requireContext(), MyService::class.java)
+                    serviceIntent.putExtra(Constants.PARAMS, itemLightDownload)
+                    startForegroundService(requireContext(), serviceIntent)
+                }else{
+                    holder.binding.playContainer.visibility = View.GONE
+                    holder.binding.pauseContainer.visibility = View.VISIBLE
+                }
+            }
+
+        }
+
 
         flashDao.getProgressById(itemLightDownload.id).observe(requireActivity(),
             Observer {
-                    if (it != null){
-                        Log.i(TAG, "onStart: $it")
+                if (it != null){
+                    if (it.videoId == itemLightDownload.id){
                         holder.binding.circularProgressBar.progress = it.progress
                     }
+                }else{
+                    Log.i(TAG, "onStartObserver: $it")
+                }
             })
 
     }
 
 
     override fun onPause(lightDownload: MutableLiveData<FlashLightDownload>,holder: ProgressAdapter.MyViewHolder) {
-        coroutineScope.launch(Dispatchers.Main) {
-            val downloadIds =
-                PR.getDownloadId(lightDownload.value!!.id)
-            Log.i(TAG, "onPause: $downloadIds")
-            try {
-                PRDownloader.pause(downloadIds!!.downloadId)
-            }catch (exception:NullPointerException){
-                Log.i(TAG, "onPause: null h re")
-            }
-
-        }
+//        itemLightDownload = lightDownload.value!!
+//        coroutineScope.launch(Dispatchers.Default) {
+//            flashDao.updateProgress(itemLightDownload.id,50)
+//        }
+//        coroutineScope.launch(Dispatchers.Main) {
+//            val downloadIds =
+//                PR.getDownloadId(lightDownload.value!!.id)
+//            Log.i(TAG, "onPause: $downloadIds")
+//            try {
+//                PRDownloader.pause(downloadIds!!.downloadId)
+//            }catch (exception:NullPointerException){
+//                Log.i(TAG, "onPause: null h re")
+//            }
+//
+//        }
     }
 
     override fun onLong(lightDownload: MutableLiveData<FlashLightDownload>, holder: ProgressAdapter.MyViewHolder) {
