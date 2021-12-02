@@ -37,6 +37,9 @@ interface FlashDao {
     @Query("DELETE FROM FlashLightDownload WHERE id=:id")
     suspend fun deleteLightDownload(id: Int)
 
+    @Query("SELECT * FROM FlashProgress")
+    fun getProgressData(): LiveData<List<FlashProgress>>
+
     @Query("UPDATE FlashProgress SET progress=:progress WHERE videoId=:videoId")
     suspend fun updateProgress(videoId: Int,progress: Int)
 

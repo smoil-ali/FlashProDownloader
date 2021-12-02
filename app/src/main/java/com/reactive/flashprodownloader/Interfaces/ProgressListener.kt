@@ -8,7 +8,9 @@ import com.reactive.flashprodownloader.model.FlashLightDownload
 
 interface ProgressListener {
     fun onStart(lightDownload: MutableLiveData<FlashLightDownload>,holder: ProgressAdapter.MyViewHolder)
+    fun onPlay(lightDownload: MutableLiveData<FlashLightDownload>,holder: ProgressAdapter.MyViewHolder)
     fun onPause(lightDownload: MutableLiveData<FlashLightDownload>,holder: ProgressAdapter.MyViewHolder)
     fun onLong(lightDownload: MutableLiveData<FlashLightDownload>,holder: ProgressAdapter.MyViewHolder)
+    fun onCancel(lightDownload: MutableLiveData<FlashLightDownload>,holder: ProgressAdapter.MyViewHolder)
     fun onRemove(lightDownload: MutableLiveData<FlashLightDownload>)
 }

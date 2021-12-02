@@ -60,13 +60,16 @@ val list: MutableList<FlashLightDownload>):RecyclerView.Adapter<RecyclerView.Vie
                 holder.binding.title.text = it.title
                 holder.binding.size.text = it.size
 
-                if (holder.binding.playContainer.visibility == View.GONE){
+
+                if (!it.selected){
                     listener.onStart(lightDownload,holder)
                 }
+
+
                 holder.binding.playContainer.setOnClickListener {
                     holder.binding.playContainer.visibility = View.GONE
                     holder.binding.pauseContainer.visibility = View.VISIBLE
-                    listener.onStart(lightDownload,holder)
+                    listener.onPlay(lightDownload,holder)
                 }
 
                 holder.binding.pauseContainer.setOnClickListener {
@@ -74,6 +77,12 @@ val list: MutableList<FlashLightDownload>):RecyclerView.Adapter<RecyclerView.Vie
                     holder.binding.pauseContainer.visibility = View.GONE
                     listener.onPause(lightDownload,holder)
                 }
+
+                holder.binding.cancelContainer.setOnClickListener(object : View.OnClickListener{
+                    override fun onClick(v: View?) {
+                        listener.onCancel(lightDownload,holder)
+                    }
+                })
 
                 holder.binding.container.setOnClickListener(object : View.OnClickListener{
                     override fun onClick(p0: View?) {

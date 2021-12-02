@@ -39,9 +39,7 @@ import java.lang.Process
 class MyService : LifecycleService() {
     private val TAG = MyService::class.simpleName
     private val CHANNEL_ID = Constants.PACKAGE_NAME
-    private var ids: MutableLiveData<Int> = MutableLiveData()
     lateinit var builder:NotificationCompat.Builder
-//    private lateinit var itemLightDownload: FlashLightDownload
     private val coroutineScope = CoroutineScope(Dispatchers.Main)
     lateinit var flashDao: FlashDao
     override fun onCreate() {
@@ -56,15 +54,7 @@ class MyService : LifecycleService() {
 
         showNotification()
 
-//        ids.observe(this, Observer {
-//            Log.i(TAG, "onCreate: ${ids.value}")
-//            if(it != 0){
-//                Log.i(TAG, "onStart: $ids")
-//                PR.addDownloadId(FlashLightDownloadsIds(0,it,itemLightDownload.id))
-//            }
-//        })
-
-        flashDao.getProgressDownloads(Constants.PROGRESS).observe(this, Observer {
+        flashDao.getProgressData().observe(this, Observer {
             Log.i(TAG, "onCreate: $it")
             if (it.isEmpty()){
                 stopSelf()
@@ -76,16 +66,18 @@ class MyService : LifecycleService() {
         super.onStartCommand(intent, flags, startId)
 
         coroutineScope.launch(Dispatchers.Default) {
+            var mId = 0
         val itemLightDownload = intent?.extras?.getSerializable(Constants.PARAMS) as FlashLightDownload
         val exist:FlashLightDownloadsIds? = PR.existId(itemLightDownload.id)
         Log.i(TAG, "onStartCommand: $itemLightDownload")
-            if (true){
-                PRDownloader.download(itemLightDownload.url,
-                    itemLightDownload.path,
-                    itemLightDownload.title)
+            if (exist == null){
+               mId = PRDownloader.download(itemLightDownload.url,
+                   itemLightDownload.path,
+                   itemLightDownload.title)
                     .build()
                     .setOnStartOrResumeListener {
-                        Log.i(TAG, "onStart resume: ${ids.value}")
+                        Log.i(TAG, "onStart resume: $mId")
+                        PR.addDownloadId(FlashLightDownloadsIds(0,mId,itemLightDownload.id,false))
                         coroutineScope.launch(Dispatchers.Default) {
                             flashDao.addProgress(FlashProgress(0,itemLightDownload.id,0))
                         }
@@ -98,7 +90,6 @@ class MyService : LifecycleService() {
                     }
                     .setOnProgressListener {
                         val result = (it.currentBytes * 100) / it.totalBytes
-                        Log.i(TAG, "onStartCommand: $itemLightDownload.id $result")
                         coroutineScope.launch(Dispatchers.Default) {
                             flashDao.updateProgress(itemLightDownload.id
                                 ,result.toInt())
@@ -118,9 +109,7 @@ class MyService : LifecycleService() {
                         }
                     })
             }else{
-                if (exist != null) {
-                    PRDownloader.resume(exist.downloadId)
-                }
+                PRDownloader.resume(exist.downloadId)
             }
         }
 
