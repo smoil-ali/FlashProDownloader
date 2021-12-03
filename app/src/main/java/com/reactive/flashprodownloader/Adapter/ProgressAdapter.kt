@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.DiffUtil
@@ -37,15 +38,16 @@ val list: MutableList<FlashLightDownload>):RecyclerView.Adapter<RecyclerView.Vie
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val lightDownload:MutableLiveData<FlashLightDownload> = MutableLiveData()
-        Log.i(TAG, "onBindViewHolder: ${holder.adapterPosition}")
         lightDownload.value = list[holder.adapterPosition]
         if (holder is MyViewHolder){
             Log.i(TAG, "onBindViewHolder: bhr")
-            holder.binding.playContainer.visibility = View.GONE
+            holder.binding.playContainer.visibility = View.INVISIBLE
             holder.binding.pauseContainer.visibility = View.VISIBLE
+            holder.binding.cancelContainer.visibility = View.VISIBLE
             holder.binding.circularProgressBar.progress = 0
             holder.binding.container.background  =
                 ContextCompat.getDrawable(context,R.drawable.shadow_background)
+            listener.onStart(lightDownload,holder)
             lightDownload.observe(lifecycle, {
                 if (!it.selected){
                     holder.binding.container.background  =
@@ -61,20 +63,16 @@ val list: MutableList<FlashLightDownload>):RecyclerView.Adapter<RecyclerView.Vie
                 holder.binding.size.text = it.size
 
 
-                if (!it.selected){
-                    listener.onStart(lightDownload,holder)
-                }
-
-
                 holder.binding.playContainer.setOnClickListener {
-                    holder.binding.playContainer.visibility = View.GONE
+                    holder.binding.playContainer.visibility = View.INVISIBLE
                     holder.binding.pauseContainer.visibility = View.VISIBLE
+                    holder.binding.cancelContainer.visibility = View.VISIBLE
                     listener.onPlay(lightDownload,holder)
                 }
 
                 holder.binding.pauseContainer.setOnClickListener {
                     holder.binding.playContainer.visibility = View.VISIBLE
-                    holder.binding.pauseContainer.visibility = View.GONE
+                    holder.binding.pauseContainer.visibility = View.INVISIBLE
                     listener.onPause(lightDownload,holder)
                 }
 

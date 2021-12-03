@@ -114,6 +114,5 @@ class TabActivity : BaseActivity(), TabFragmentListener {
 
     override fun onDestroy() {
         super.onDestroy()
-        coroutineScope.coroutineContext.cancelChildren()
     }
 }

@@ -141,7 +141,8 @@ class HomeFragment : BaseFragment(), WebViewCallbacks, HomePageAdapterCallbacks
         })
 
 
-        getWindow()
+
+        getAllWindows()
 
         sharedPrefernces = requireContext().getSharedPreferences(
             "com.reactive.FlashProDownloader",
@@ -163,6 +164,11 @@ class HomeFragment : BaseFragment(), WebViewCallbacks, HomePageAdapterCallbacks
         return binding.root
     }
 
+    override fun onStart() {
+        super.onStart()
+        getWindow()
+    }
+
 
     override fun onResume() {
         super.onResume()
@@ -179,7 +185,7 @@ class HomeFragment : BaseFragment(), WebViewCallbacks, HomePageAdapterCallbacks
         setBookmarkMain(this)
         setHistoryMain(this)
         setTabListener(this)
-        getAllWindows()
+
 
 
         if (!Utils.isSnapShotTaken(requireContext())) {
@@ -285,14 +291,13 @@ class HomeFragment : BaseFragment(), WebViewCallbacks, HomePageAdapterCallbacks
                 }
                 Log.i(TAG, "getWindow: $currentWindow")
             }
-        } else {
-            createNewTab()
         }
     }
 
     private fun getAllWindows() {
 
-        flashDao.getAllFlashWindows().observe(requireActivity(), androidx.lifecycle.Observer {
+        flashDao.getAllFlashWindows().observe(requireActivity(),
+            androidx.lifecycle.Observer {
             Log.i(TAG, "getAllWindows: $it")
             if (it.isNotEmpty()) {
                 if (it.size == 1) {
@@ -302,8 +307,8 @@ class HomeFragment : BaseFragment(), WebViewCallbacks, HomePageAdapterCallbacks
                 }
                 binding.homePage.tabNumber.text = it.size.toString()
                 binding.homeBrowser.tabNumber.text = it.size.toString()
-            } else {
-                Utils.saveSelectedId(requireContext(), 0)
+            }else{
+                createNewTab()
             }
         })
 
@@ -332,6 +337,7 @@ class HomeFragment : BaseFragment(), WebViewCallbacks, HomePageAdapterCallbacks
     }
 
     private fun showHomePage() {
+        currentWebView?.destroy()
         binding.homePage.root.visibility = View.VISIBLE
         binding.homeBrowser.root.visibility = View.GONE
     }
@@ -506,12 +512,29 @@ class HomeFragment : BaseFragment(), WebViewCallbacks, HomePageAdapterCallbacks
         updateData()
     }
 
-
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onStop() {
+        super.onStop()
+        Log.i(TAG, "onStop: ")
+        map.remove(currentWindow.id)
+        binding.homeBrowser.webViewContainer.removeView(currentWebView)
+        currentWebView?.removeAllViews()
         currentWebView?.destroy()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        Log.i(TAG, "onDestroyView: ")
         coroutineScope.coroutineContext.cancelChildren()
         sharedPrefernces.unregisterOnSharedPreferenceChangeListener(this)
+    }
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.i(TAG, "onDestroy: ")
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        Log.i(TAG, "onDetach: called")
     }
 
     override fun onBookmark(bookmark: FlashBookmark) {

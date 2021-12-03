@@ -20,13 +20,13 @@ class PR {
             return false
         }
 
-        fun existId(subjectId: Int): FlashLightDownloadsIds?{
+        fun existId(subjectId: Int): FlashLightDownloadsIds {
             list.forEach {
                 if (it.subjectId == subjectId){
                     return it
                 }
             }
-            return null
+            throw NullPointerException()
         }
 
         fun deleteId(subjectId: Int){
@@ -34,7 +34,7 @@ class PR {
             list.remove(lightDownloadsIds)
         }
 
-        fun getDownloadId(id: Int):FlashLightDownloadsIds?{
+        fun getDownloadId(id: Int):FlashLightDownloadsIds{
             return existId(id)
         }
 

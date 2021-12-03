@@ -52,8 +52,6 @@ class ProgressFragment : BaseFragment(), MainActivityListener, OnBackPressedList
     private val coroutineScope = CoroutineScope(Dispatchers.Main)
     private val list:MutableList<FlashLightDownload> = mutableListOf()
     private lateinit var adapter: ProgressAdapter
-//    private lateinit var itemLightDownload: FlashLightDownload
-    private var ids: MutableLiveData<Int> = MutableLiveData()
     private val idsList:MutableList<MutableLiveData<FlashLightDownload>> = mutableListOf()
 
 
@@ -73,10 +71,6 @@ class ProgressFragment : BaseFragment(), MainActivityListener, OnBackPressedList
         binding.recycler.layoutManager = LinearLayoutManager(requireContext())
         binding.recycler.adapter = adapter
 
-        val config = PRDownloaderConfig.newBuilder()
-            .setDatabaseEnabled(true)
-            .build()
-        PRDownloader.initialize(requireContext(), config)
 
 
         getData()
@@ -156,16 +150,32 @@ class ProgressFragment : BaseFragment(), MainActivityListener, OnBackPressedList
                     serviceIntent.putExtra(Constants.PARAMS, itemLightDownload)
                     startForegroundService(requireContext(), serviceIntent)
                 }else{
-                    PR.getDownloadId(lightDownload.value!!.id)?.let {
-                        Log.i(TAG, "onStart: $it")
-                        if (it.isPause){
-                            holder.binding.playContainer.visibility = View.VISIBLE
-                            holder.binding.pauseContainer.visibility = View.GONE
-                        }else{
-                            holder.binding.playContainer.visibility = View.GONE
-                            holder.binding.pauseContainer.visibility = View.VISIBLE
+                    try {
+                        PR.getDownloadId(lightDownload.value!!.id).let {
+                            Log.i(TAG, "onStart else: $it")
+                            if (it.isPause){
+                                holder.binding.playContainer.visibility = View.VISIBLE
+                                holder.binding.pauseContainer.visibility = View.GONE
+                            }else{
+                                holder.binding.playContainer.visibility = View.GONE
+                                holder.binding.pauseContainer.visibility = View.VISIBLE
+                            }
+                        }
+                    }catch (exception: NullPointerException){
+                        Log.i(TAG, "onStart Catch: ${exception.message}")
+                        coroutineScope.launch(Dispatchers.Main) {
+                            val msg = withContext(Dispatchers.Default){
+                                flashDao.deleteFlashProgress(lightDownload.value!!.id)
+                                "deleted"
+                            }
+                            Log.i(TAG, "onStart: $msg")
+                            val serviceIntent = Intent(requireContext(), MyService::class.java)
+                            serviceIntent.putExtra(Constants.PARAMS, lightDownload.value)
+                            startForegroundService(requireContext(), serviceIntent)
+
                         }
                     }
+
                 }
             }
 
@@ -191,7 +201,7 @@ class ProgressFragment : BaseFragment(), MainActivityListener, OnBackPressedList
         holder: ProgressAdapter.MyViewHolder
     ) {
         try {
-            PR.getDownloadId(lightDownload.value!!.id)!!.let {
+            PR.getDownloadId(lightDownload.value!!.id).let {
                 Log.i(TAG, "onStart: ${it}")
                 if (it.isPause){
                     it.isPause = false
@@ -209,10 +219,10 @@ class ProgressFragment : BaseFragment(), MainActivityListener, OnBackPressedList
 
 
     override fun onPause(lightDownload: MutableLiveData<FlashLightDownload>,holder: ProgressAdapter.MyViewHolder) {
-        PR.getDownloadId(lightDownload.value!!.id)?.apply {
+        PR.getDownloadId(lightDownload.value!!.id).apply {
             Log.i(TAG, "onPause: ${this}")
-                    this.isPause = true
-                    PRDownloader.pause(this.downloadId)
+            this.isPause = true
+            PRDownloader.pause(this.downloadId)
 
         }
     }
@@ -227,15 +237,19 @@ class ProgressFragment : BaseFragment(), MainActivityListener, OnBackPressedList
                 "deleted"
             }
             Log.i(TAG, "onCancel: $msg")
-            PR.getDownloadId(lightDownload.value!!.id)?.apply {
+            PR.getDownloadId(lightDownload.value!!.id).apply {
                 Log.i(TAG, "onCancel: $this")
                 PRDownloader.cancel(this.downloadId)
                 holder.binding.circularProgressBar.progress = 0
-                holder.binding.pauseContainer.visibility = View.GONE
+                holder.binding.pauseContainer.visibility = View.INVISIBLE
                 holder.binding.playContainer.visibility = View.VISIBLE
             }
             PR.deleteId(lightDownload.value!!.id)
             Log.i(TAG, "onCancel: ${PR.getSize()}")
+            if (PR.getSize() == 0){
+                val serviceIntent = Intent(requireContext(), MyService::class.java)
+                requireContext().stopService(serviceIntent)
+            }
         }
 
     }
@@ -268,9 +282,11 @@ class ProgressFragment : BaseFragment(), MainActivityListener, OnBackPressedList
             Log.i(TAG, "cancelDownloading: ${its.hasNext()}")
             while (its.hasNext()){
                 val model = its.next()
-                val exist = PR.existId(model.value!!.id)
-                if (exist != null){
+                try {
+                    val exist = PR.existId(model.value!!.id)
                     PRDownloader.cancel(exist.downloadId)
+                }catch (exception: NullPointerException){
+                    Log.i(TAG, "cancelDownloading: $exception")
                 }
                 Log.i(TAG, "cancelDownloading: $model")
                 val msg = withContext(Dispatchers.Default){
@@ -278,6 +294,7 @@ class ProgressFragment : BaseFragment(), MainActivityListener, OnBackPressedList
                     flashDao.deleteLightDownload(model.value!!.id)
                     "Deleted"
                 }
+                Log.i(TAG, "cancelDownloading: $msg")
                 its.remove()
             }
         }

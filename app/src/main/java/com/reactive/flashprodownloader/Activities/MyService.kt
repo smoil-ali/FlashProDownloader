@@ -54,7 +54,7 @@ class MyService : LifecycleService() {
 
         showNotification()
 
-        flashDao.getProgressData().observe(this, Observer {
+        flashDao.getProgressDownloads(Constants.PROGRESS).observe(this, Observer {
             Log.i(TAG, "onCreate: $it")
             if (it.isEmpty()){
                 stopSelf()
@@ -68,12 +68,16 @@ class MyService : LifecycleService() {
         coroutineScope.launch(Dispatchers.Default) {
             var mId = 0
         val itemLightDownload = intent?.extras?.getSerializable(Constants.PARAMS) as FlashLightDownload
-        val exist:FlashLightDownloadsIds? = PR.existId(itemLightDownload.id)
-        Log.i(TAG, "onStartCommand: $itemLightDownload")
-            if (exist == null){
-               mId = PRDownloader.download(itemLightDownload.url,
-                   itemLightDownload.path,
-                   itemLightDownload.title)
+            try {
+                Log.i(TAG, "onStartCommand: $itemLightDownload")
+                val exist: FlashLightDownloadsIds = PR.existId(itemLightDownload.id)
+                Log.i(TAG, "onStartCommand: here")
+                PRDownloader.resume(exist.downloadId)
+            }catch (exception:NullPointerException){
+                Log.i(TAG, "onStartCommand: catch ${exception.message}")
+                mId = PRDownloader.download(itemLightDownload.url,
+                    itemLightDownload.path,
+                    itemLightDownload.title)
                     .build()
                     .setOnStartOrResumeListener {
                         Log.i(TAG, "onStart resume: $mId")
@@ -108,8 +112,6 @@ class MyService : LifecycleService() {
                             Log.i(TAG, "onError: ${error.toString()}")
                         }
                     })
-            }else{
-                PRDownloader.resume(exist.downloadId)
             }
         }
 
