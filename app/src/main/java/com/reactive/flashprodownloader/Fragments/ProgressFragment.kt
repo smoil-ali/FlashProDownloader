@@ -6,38 +6,21 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.startForegroundService
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.downloader.OnDownloadListener
 import com.downloader.PRDownloader
-import com.downloader.PRDownloaderConfig
 import com.reactive.flashprodownloader.Activities.MyService
-import com.reactive.flashprodownloader.Activities.MyService2
 import com.reactive.flashprodownloader.Adapter.ProgressAdapter
 import com.reactive.flashprodownloader.Helper.Constants
 import com.reactive.flashprodownloader.Helper.PR
-import com.reactive.flashprodownloader.Helper.Utils
 import com.reactive.flashprodownloader.Interfaces.MainActivityListener
 import com.reactive.flashprodownloader.Interfaces.OnBackPressedListener
 import com.reactive.flashprodownloader.Interfaces.ProgressListener
-import com.reactive.flashprodownloader.R
 import com.reactive.flashprodownloader.databinding.FragmentProgressBinding
 import com.reactive.flashprodownloader.model.FlashLightDownload
-import com.reactive.flashprodownloader.model.FlashLightDownloadsIds
-import com.reactive.flashprodownloader.model.FlashProgress
-import com.tonyodev.fetch2.*
-import com.tonyodev.fetch2core.Func
-import com.tonyodev.fetch2.Download
 
-import org.jetbrains.annotations.NotNull
-
-import com.tonyodev.fetch2.FetchListener
-import com.tonyodev.fetch2core.DownloadBlock
 import kotlinx.coroutines.*
 
 

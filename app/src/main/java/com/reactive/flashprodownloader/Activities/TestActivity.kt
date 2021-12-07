@@ -3,10 +3,15 @@ package com.reactive.flashprodownloader.Activities
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
+import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.storage.StorageManager
+import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.reactive.flashprodownloader.Helper.Constants
@@ -14,76 +19,97 @@ import com.reactive.flashprodownloader.R
 import com.reactive.flashprodownloader.databinding.ActivityTestBinding
 import java.util.*
 import androidx.core.content.ContextCompat
-
-
+import androidx.documentfile.provider.DocumentFile
+import com.bumptech.glide.util.Util
+import com.reactive.flashprodownloader.Helper.Utils
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 
 class TestActivity : AppCompatActivity() {
     private val TAG = TestActivity::class.simpleName
-    val CHANNEL_ID = Constants.PACKAGE_NAME
+    val coroutineScope = CoroutineScope(Dispatchers.Main)
     lateinit var binding: ActivityTestBinding
+    @RequiresApi(Build.VERSION_CODES.Q)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityTestBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        val storageManager = application.getSystemService(Context.STORAGE_SERVICE) as StorageManager
+        val intent =  storageManager.primaryStorageVolume.createOpenDocumentTreeIntent()
 
-        binding.button.setOnClickListener {
-            Intent(this,MyService::class.java).also {
-                startService()
+        val targetDirectory = "WhatsApp%2FMedia%2F.Statuses" // add your directory to be selected by the user
+        var uri = intent.getParcelableExtra<Uri>("android.provider.extra.INITIAL_URI") as Uri
+        var scheme = uri.toString()
+        Log.i(TAG, "onCreate: $scheme")
+        scheme = scheme.replace("/root/", "/document/")
+        scheme += "%3A$targetDirectory"
+        Log.i(TAG, "onCreate: $scheme")
+        uri = Uri.parse(scheme)
+        intent.putExtra("android.provider.extra.INITIAL_URI", uri)
+        startActivityForResult(intent, 11)
+
+
+
+
+
+
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == RESULT_OK && requestCode == 11) {
+            if (data != null) {
+                Log.i(TAG, "onActivityResult: not null $data")
+                Utils.showToast(this,"not null")
+                data.data?.let { treeUri ->
+
+
+                    contentResolver.takePersistableUriPermission(
+                        treeUri,
+                        Intent.FLAG_GRANT_READ_URI_PERMISSION or
+                                Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                    )
+
+                    readSDK30(treeUri)
+                }
+            }else{
+                Utils.showToast(this,"null")
+                Log.i(TAG, "onActivityResult: data null")
             }
         }
+    }
 
-        binding.stop.setOnClickListener {
-            Intent(this,MyService::class.java).also {
-                stopService()
+    private fun readSDK30(treeUri: Uri) {
+        val tree = DocumentFile.fromTreeUri(this, treeUri)!!
+
+        coroutineScope.launch(Dispatchers.Default) {
+            val uriList = arrayListOf<Uri>()
+            listFiles(tree).forEach { uri ->
+
+                val path = uri.toString()
+                coroutineScope.launch(Dispatchers.Main) {
+                    delay(1000)
+                    binding.path.text = path
+                }
+                Log.i(TAG, "readSDK30: $uri")
+
             }
         }
-
     }
 
-    private fun showNotification(){
-        val intent = Intent(this, MainActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            putExtra(Constants.PARAMS,true)
-        }
-        val pendingIntent: PendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
-        val builder = NotificationCompat.Builder(this,CHANNEL_ID)
-            .setSmallIcon(R.drawable.logo_icon)
-            .setContentTitle("Downloading...")
-            .setContentText("File is downloading...")
-            .setStyle(NotificationCompat.BigTextStyle().bigText("oye hoye..."))
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-            .setContentIntent(pendingIntent)
-            .setAutoCancel(false)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-            val channelName = getString(R.string.app_name)
-            val description = "Video Downloading..."
-            val importance = NotificationManager.IMPORTANCE_DEFAULT
-            val channel = NotificationChannel(CHANNEL_ID,channelName,importance)
-            channel.description = description
-            val notificationManager = getSystemService(NotificationManager::class.java)
-            notificationManager.createNotificationChannel(channel)
-        }
-
-
-        val MAX_PROGRESS = 100
-        val CURRENT_PROGRESS = 50
-        builder.setProgress(MAX_PROGRESS,CURRENT_PROGRESS,false)
-        val notificationManager = NotificationManagerCompat.from(this)
-        notificationManager.notify(1,builder.build())
+    fun listFiles(folder: DocumentFile): List<Uri> {
+            return if (folder.isDirectory) {
+                folder.listFiles().mapNotNull { file ->
+                    if (file.name != null) file.uri else null
+                }
+            } else {
+                emptyList()
+            }
     }
 
-
-    fun startService() {
-        val serviceIntent = Intent(this, MyService2::class.java)
-        serviceIntent.putExtra("inputExtra", "Foreground Service Example in Android")
-        ContextCompat.startForegroundService(this, serviceIntent)
-    }
-
-    fun stopService() {
-        val serviceIntent = Intent(this, MyService::class.java)
-        stopService(serviceIntent)
-    }
 
 }

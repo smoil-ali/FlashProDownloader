@@ -12,6 +12,8 @@ import com.reactive.flashprodownloader.R;
 import java.io.File;
 
 public class Constants {
+
+
     public static String FACEBOOK_SCRIPT = "javascript:function clickOnVideo(link, classValueName){" +
             "browser.getVideoData(link);" +
             "var element = document.getElementById(\"mInlineVideoPlayer\");" +

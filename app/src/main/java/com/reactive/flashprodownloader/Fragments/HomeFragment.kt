@@ -295,7 +295,6 @@ class HomeFragment : BaseFragment(), WebViewCallbacks, HomePageAdapterCallbacks
     }
 
     private fun getAllWindows() {
-
         flashDao.getAllFlashWindows().observe(requireActivity(),
             androidx.lifecycle.Observer {
             Log.i(TAG, "getAllWindows: $it")
@@ -357,7 +356,6 @@ class HomeFragment : BaseFragment(), WebViewCallbacks, HomePageAdapterCallbacks
             binding.homeBrowser.pbPageLoading.visibility = View.VISIBLE
             currentWebView!!.loadUrl(currentWindow.url!!)
         }
-        stopRun = true
         setOnBackPressedListener(this)
         binding.homeBrowser.searchUrl.setText(currentWindow.url)
         currentWebView!!.requestFocus()
@@ -491,7 +489,6 @@ class HomeFragment : BaseFragment(), WebViewCallbacks, HomePageAdapterCallbacks
             currentWindow.title = Constants.BLANK_URL
             currentWindow.url = Constants.BLANK_URL
             currentWindow.path = Constants.BLANK_URL
-            stopRun = false
             currentWebView = null
             customWebView?.stopEngine()
             videoList.value = mutableListOf()
@@ -521,20 +518,12 @@ class HomeFragment : BaseFragment(), WebViewCallbacks, HomePageAdapterCallbacks
         currentWebView?.destroy()
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        Log.i(TAG, "onDestroyView: ")
-        coroutineScope.coroutineContext.cancelChildren()
-        sharedPrefernces.unregisterOnSharedPreferenceChangeListener(this)
-    }
+
     override fun onDestroy() {
         super.onDestroy()
         Log.i(TAG, "onDestroy: ")
-    }
-
-    override fun onDetach() {
-        super.onDetach()
-        Log.i(TAG, "onDetach: called")
+        coroutineScope.coroutineContext.cancelChildren()
+        sharedPrefernces.unregisterOnSharedPreferenceChangeListener(this)
     }
 
     override fun onBookmark(bookmark: FlashBookmark) {
