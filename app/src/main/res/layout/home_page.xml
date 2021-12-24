@@ -119,10 +119,9 @@
                 android:drawableStart="@drawable/start_drawable"
                 android:drawablePadding="15dp"
                 android:hint="@string/search_url"
-                android:textColor="@color/white"
                 android:inputType="textUri"
                 android:selectAllOnFocus="true"
-                />
+                android:textColor="@color/white" />
 
 
         </RelativeLayout>

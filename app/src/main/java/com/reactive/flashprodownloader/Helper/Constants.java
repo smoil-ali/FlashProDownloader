@@ -158,10 +158,6 @@ public class Constants {
         File file = new File(context.getExternalFilesDir(null)+
                 "/"+"ScreenShot/"+folderName+"/screenShot.jpeg");
         return file.getAbsolutePath();
-//        if(file.exists()){
-//            myBitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
-//        }
-//        return myBitmap;
     }
 
     public static Animation loadAnimation(Context context){

@@ -59,7 +59,4 @@ class CustomWebView(private val listener: WebViewCallbacks,
     fun stopEngine(){
         mWebClient.stopEngine()
     }
-
-
-
 }
